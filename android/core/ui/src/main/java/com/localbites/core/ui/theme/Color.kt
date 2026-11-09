@@ -1,0 +1,66 @@
+package com.localbites.core.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+// Primary - Warm Orange (appetite, food, energy)
+val Orange10 = Color(0xFF3D1500)
+val Orange20 = Color(0xFF662600)
+val Orange30 = Color(0xFF8F3800)
+val Orange40 = Color(0xFFBA4D00)
+val Orange50 = Color(0xFFE56000)
+val Orange60 = Color(0xFFFF6B35)
+val Orange70 = Color(0xFFFF8F5E)
+val Orange80 = Color(0xFFFFB68A)
+val Orange90 = Color(0xFFFFDBC9)
+val Orange95 = Color(0xFFFFEDE4)
+val Orange99 = Color(0xFFFFFBFF)
+
+// Secondary - Fresh Green (freshness, health)
+val Green10 = Color(0xFF002106)
+val Green20 = Color(0xFF00390F)
+val Green30 = Color(0xFF005319)
+val Green40 = Color(0xFF006E24)
+val Green50 = Color(0xFF008A30)
+val Green60 = Color(0xFF4CAF50)
+val Green70 = Color(0xFF6BCB6F)
+val Green80 = Color(0xFF8DE88F)
+val Green90 = Color(0xFFB8F5B5)
+val Green95 = Color(0xFFD4FFD2)
+val Green99 = Color(0xFFF5FFF2)
+
+// Tertiary - Warm Brown (comfort, earthy)
+val Brown10 = Color(0xFF2C1600)
+val Brown20 = Color(0xFF4A2800)
+val Brown30 = Color(0xFF6A3C00)
+val Brown40 = Color(0xFF8C5200)
+val Brown50 = Color(0xFFAF6A00)
+val Brown60 = Color(0xFFD08300)
+val Brown70 = Color(0xFFF09D00)
+val Brown80 = Color(0xFFFFB950)
+val Brown90 = Color(0xFFFFDDB0)
+val Brown95 = Color(0xFFFFEEDA)
+
+// Neutral
+val Neutral10 = Color(0xFF1C1B1F)
+val Neutral20 = Color(0xFF313033)
+val Neutral30 = Color(0xFF484649)
+val Neutral40 = Color(0xFF605D62)
+val Neutral50 = Color(0xFF79767A)
+val Neutral60 = Color(0xFF939094)
+val Neutral70 = Color(0xFFAEAAAE)
+val Neutral80 = Color(0xFFCAC5CA)
+val Neutral90 = Color(0xFFE6E1E5)
+val Neutral95 = Color(0xFFF4EFF4)
+val Neutral99 = Color(0xFFFFFBFE)
+
+// Veg/NonVeg indicators
+val VegGreen = Color(0xFF0F8A0F)
+val NonVegRed = Color(0xFFB71C1C)
+val EggYellow = Color(0xFFF9A825)
+
+// Status colors
+val OrderPlaced = Color(0xFF2196F3)
+val OrderPreparing = Color(0xFFFF9800)
+val OrderReady = Color(0xFF4CAF50)
+val OrderDelivered = Color(0xFF4CAF50)
+val OrderCancelled = Color(0xFFF44336)

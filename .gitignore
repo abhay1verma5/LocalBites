@@ -1,0 +1,48 @@
+# Android
+android/.gradle/
+android/**/build/
+android/local.properties
+android/.idea/
+android/**/*.iml
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+android/**/*.apk
+android/**/*.aab
+android/**/*.ap_
+android/**/*.dex
+android/**/*.class
+android/**/gen/
+android/**/out/
+
+# Python / Django
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/.env
+backend/venv/
+backend/env/
+backend/.venv/
+backend/db.sqlite3
+backend/staticfiles/
+backend/mediafiles/
+backend/*.egg-info/
+backend/.eggs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Environment
+.env
+.env.local
+.env.*.local
