@@ -21,7 +21,7 @@ interface AuthApi {
     suspend fun updateProfile(@Body profile: Map<String, String>): Response<UserProfile>
 
     @GET("auth/addresses/")
-    suspend fun getAddresses(): Response<List<Address>>
+    suspend fun getAddresses(): Response<PaginatedResponse<Address>>
 
     @POST("auth/addresses/")
     suspend fun createAddress(@Body address: Address): Response<Address>

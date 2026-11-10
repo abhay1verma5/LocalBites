@@ -58,6 +58,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localbites.core.network.model.MenuCategory
 import com.localbites.core.network.model.MenuItem
 import com.localbites.core.ui.components.EmptyState
+import androidx.compose.ui.res.stringResource
+import com.localbites.feature.restaurant.R
 import com.localbites.core.ui.components.FoodTypeIndicator
 import com.localbites.core.ui.theme.Green60
 import com.localbites.feature.restaurant.viewmodel.RestaurantOwnerViewModel
@@ -83,7 +85,7 @@ fun MenuManagementScreen(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Add menu item",
+                    contentDescription = stringResource(R.string.add_menu_item),
                 )
             }
         },
@@ -95,7 +97,7 @@ fun MenuManagementScreen(
         ) {
             // Title
             Text(
-                text = "Menu Management",
+                text = stringResource(R.string.menu_management),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -104,8 +106,8 @@ fun MenuManagementScreen(
 
             if (uiState.menuCategories.isEmpty()) {
                 EmptyState(
-                    title = "No menu items",
-                    subtitle = "Add categories and items to get started",
+                    title = stringResource(R.string.no_menu_items),
+                    subtitle = stringResource(R.string.add_categories_to_start),
                 )
             } else {
                 MenuCategoryList(
@@ -315,7 +317,7 @@ private fun AddMenuItemForm(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "Add Menu Item",
+            text = stringResource(R.string.add_menu_item_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -440,7 +442,7 @@ private fun AddMenuItemForm(
             enabled = name.isNotBlank() && price.isNotBlank(),
         ) {
             Text(
-                text = "Add Item",
+                text = stringResource(R.string.add_item),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )

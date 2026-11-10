@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,38 +33,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.localbites.feature.delivery.R
 import com.localbites.feature.delivery.viewmodel.DeliveryViewModel
 
 sealed class DeliveryTab(
     val route: String,
-    val label: String,
+    val titleResId: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
 ) {
     data object Orders : DeliveryTab(
         route = "available_orders",
-        label = "Orders",
+        titleResId = R.string.tab_orders,
         selectedIcon = Icons.Filled.DateRange,
         unselectedIcon = Icons.Outlined.DateRange,
     )
 
     data object History : DeliveryTab(
         route = "delivery_history",
-        label = "History",
+        titleResId = R.string.tab_history,
         selectedIcon = Icons.Filled.DateRange,
         unselectedIcon = Icons.Outlined.DateRange,
     )
 
     data object Earnings : DeliveryTab(
         route = "earnings",
-        label = "Earnings",
+        titleResId = R.string.tab_earnings,
         selectedIcon = Icons.Filled.Star,
         unselectedIcon = Icons.Outlined.Star,
     )
 
     data object Profile : DeliveryTab(
         route = "profile",
-        label = "Profile",
+        titleResId = R.string.tab_profile,
         selectedIcon = Icons.Filled.AccountCircle,
         unselectedIcon = Icons.Outlined.AccountCircle,
     )
@@ -92,6 +94,7 @@ fun DeliveryMainScreen(
             ) {
                 tabs.forEach { tab ->
                     val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true
+                    val label = stringResource(tab.titleResId)
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
@@ -106,12 +109,12 @@ fun DeliveryMainScreen(
                         icon = {
                             Icon(
                                 imageVector = if (selected) tab.selectedIcon else tab.unselectedIcon,
-                                contentDescription = tab.label,
+                                contentDescription = label,
                             )
                         },
                         label = {
                             Text(
-                                text = tab.label,
+                                text = label,
                                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                             )
                         },
@@ -153,7 +156,7 @@ private fun DeliveryProfilePlaceholder(onNavigateToProfile: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         TextButton(onClick = onNavigateToProfile) {
-            Text("View Profile Settings")
+            Text(stringResource(R.string.view_profile_settings))
         }
     }
 }

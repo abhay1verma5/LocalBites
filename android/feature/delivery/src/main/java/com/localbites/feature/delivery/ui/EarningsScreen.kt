@@ -32,6 +32,8 @@ import com.localbites.core.ui.theme.Green50
 import com.localbites.core.ui.theme.Green60
 import com.localbites.core.ui.theme.Green90
 import com.localbites.feature.delivery.viewmodel.DeliveryViewModel
+import androidx.compose.ui.res.stringResource
+import com.localbites.feature.delivery.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +51,7 @@ fun EarningsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Earnings",
+                        text = stringResource(R.string.earnings),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                     )
@@ -121,7 +123,7 @@ private fun TodayEarningsCard(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Today's Earnings",
+                text = stringResource(R.string.todays_earnings),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White.copy(alpha = 0.85f),
             )
@@ -164,7 +166,7 @@ private fun TotalEarningsCard(
         ) {
             Column {
                 Text(
-                    text = "Total Earnings",
+                    text = stringResource(R.string.total_earnings),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -178,7 +180,7 @@ private fun TotalEarningsCard(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "Total Deliveries",
+                    text = stringResource(R.string.total_deliveries),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

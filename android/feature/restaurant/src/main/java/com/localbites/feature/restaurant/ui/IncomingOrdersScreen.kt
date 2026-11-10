@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localbites.core.network.model.Order
 import com.localbites.core.ui.components.EmptyState
+import androidx.compose.ui.res.stringResource
+import com.localbites.feature.restaurant.R
 import com.localbites.core.ui.theme.Green60
 import com.localbites.core.ui.theme.OrderPreparing
 import com.localbites.feature.restaurant.viewmodel.RestaurantOwnerViewModel
@@ -78,7 +80,7 @@ fun IncomingOrdersScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             // Title
             Text(
-                text = "Incoming Orders",
+                text = stringResource(R.string.incoming_orders),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -115,8 +117,8 @@ fun IncomingOrdersScreen(
             // Orders list
             if (uiState.incomingOrders.isEmpty()) {
                 EmptyState(
-                    title = "No orders found",
-                    subtitle = "Orders matching the selected filter will appear here",
+                    title = stringResource(R.string.no_orders_found),
+                    subtitle = stringResource(R.string.orders_filter_empty_subtitle),
                 )
             } else {
                 LazyColumn(
@@ -176,7 +178,7 @@ private fun OrderCard(
             // Customer name (using delivery partner name as a proxy or restaurantName)
             order.deliveryPartnerName?.let { name ->
                 Text(
-                    text = "Customer: $name",
+                    text = stringResource(R.string.customer_label, name),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -233,7 +235,7 @@ private fun OrderCard(
             if (!order.specialInstructions.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Note: ${order.specialInstructions}",
+                    text = stringResource(R.string.note_label, order.specialInstructions ?: ""),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.tertiary,
                     fontWeight = FontWeight.Medium,
@@ -277,7 +279,7 @@ private fun OrderCard(
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
                         ) {
                             Text(
-                                text = "Accept",
+                                text = stringResource(R.string.accept),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -293,7 +295,7 @@ private fun OrderCard(
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
                         ) {
                             Text(
-                                text = "Mark Ready",
+                                text = stringResource(R.string.mark_ready),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                             )

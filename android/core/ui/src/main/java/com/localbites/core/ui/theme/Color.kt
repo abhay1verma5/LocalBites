@@ -2,15 +2,15 @@ package com.localbites.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primary - Warm Orange (appetite, food, energy)
+// Primary - Warm Swiggy Orange (appetite-stimulating, proven food tone)
 val Orange10 = Color(0xFF3D1500)
 val Orange20 = Color(0xFF662600)
 val Orange30 = Color(0xFF8F3800)
 val Orange40 = Color(0xFFBA4D00)
 val Orange50 = Color(0xFFE56000)
-val Orange60 = Color(0xFFFF6B35)
-val Orange70 = Color(0xFFFF8F5E)
-val Orange80 = Color(0xFFFFB68A)
+val Orange60 = Color(0xFFFC8019) // Swiggy-inspired warm orange
+val Orange70 = Color(0xFFFF9A45)
+val Orange80 = Color(0xFFFFB877)
 val Orange90 = Color(0xFFFFDBC9)
 val Orange95 = Color(0xFFFFEDE4)
 val Orange99 = Color(0xFFFFFBFF)
@@ -52,6 +52,19 @@ val Neutral80 = Color(0xFFCAC5CA)
 val Neutral90 = Color(0xFFE6E1E5)
 val Neutral95 = Color(0xFFF4EFF4)
 val Neutral99 = Color(0xFFFFFBFE)
+
+// === Semantic Colors (Swiggy/Zomato-inspired) ===
+val CharcoalText = Color(0xFF282C3F)      // Primary text - deep charcoal
+val SecondaryText = Color(0xFF7E808C)      // Secondary/muted text
+val RatingGreen = Color(0xFF48C479)        // Rating badges, success states
+val WarmCream = Color(0xFFFFF8F0)          // Warm background tint
+val OfferBlue = Color(0xFF5D8ED5)          // Offer/promo badges
+val PromoGold = Color(0xFFFFD54F)          // Gold accent for premium offers
+
+// Gradient overlay colors for restaurant card scrims
+val GradientScrimStart = Color(0x00000000) // Transparent
+val GradientScrimMid = Color(0x40000000)   // 25% black
+val GradientScrimEnd = Color(0xCC000000)   // 80% black - strong for text readability
 
 // Veg/NonVeg indicators
 val VegGreen = Color(0xFF0F8A0F)

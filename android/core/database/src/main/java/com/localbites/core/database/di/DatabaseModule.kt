@@ -3,7 +3,7 @@ package com.localbites.core.database.di
 import android.content.Context
 import androidx.room.Room
 import com.localbites.core.database.LocalBitesDatabase
-import com.localbites.core.database.dao.CartDao
+import com.localbites.core.database.dao.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,8 +22,24 @@ object DatabaseModule {
             context,
             LocalBitesDatabase::class.java,
             "localbites_db"
-        ).build()
+        )
+            .addMigrations(LocalBitesDatabase.MIGRATION_1_2)
+            .build()
 
     @Provides
     fun provideCartDao(db: LocalBitesDatabase): CartDao = db.cartDao()
+
+    @Provides
+    fun provideCachedRestaurantDao(db: LocalBitesDatabase): CachedRestaurantDao =
+        db.cachedRestaurantDao()
+
+    @Provides
+    fun provideCachedMenuDao(db: LocalBitesDatabase): CachedMenuDao = db.cachedMenuDao()
+
+    @Provides
+    fun provideCachedOrderDao(db: LocalBitesDatabase): CachedOrderDao = db.cachedOrderDao()
+
+    @Provides
+    fun provideCachedUserProfileDao(db: LocalBitesDatabase): CachedUserProfileDao =
+        db.cachedUserProfileDao()
 }

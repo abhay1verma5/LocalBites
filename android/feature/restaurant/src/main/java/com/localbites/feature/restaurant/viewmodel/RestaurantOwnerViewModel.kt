@@ -49,7 +49,7 @@ class RestaurantOwnerViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             when (val result = safeApiCall { restaurantApi.getOwnerRestaurants() }) {
                 is Resource.Success -> {
-                    val restaurant = result.data.firstOrNull()
+                    val restaurant = result.data.results.firstOrNull()
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -100,7 +100,7 @@ class RestaurantOwnerViewModel @Inject constructor(
             when (val result = safeApiCall { restaurantApi.getRestaurantMenu(restaurantId) }) {
                 is Resource.Success -> {
                     _uiState.update {
-                        it.copy(menuCategories = result.data, error = null)
+                        it.copy(menuCategories = result.data.results, error = null)
                     }
                 }
                 is Resource.Error -> {

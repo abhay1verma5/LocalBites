@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bottom Navigation -->
+    <string name="tab_orders">Orders</string>
+    <string name="tab_history">History</string>
+    <string name="tab_earnings">Earnings</string>
+    <string name="tab_profile">Profile</string>
+
+    <!-- AvailableOrdersScreen -->
+    <string name="youre_online">You\'re Online</string>
+    <string name="youre_offline">You\'re Offline</string>
+    <string name="looking_for_orders">Looking for orders nearby…</string>
+    <string name="go_online_to_start">Go online to start receiving orders</string>
+    <string name="no_orders_nearby">No orders nearby</string>
+    <string name="new_orders_when_available">New orders will appear here when available</string>
+    <string name="go_online_to_see_orders">Go online to see available orders</string>
+    <string name="toggle_switch_hint">Toggle the switch above to start accepting deliveries</string>
+    <string name="pickup">PICKUP</string>
+    <string name="deliver">DELIVER</string>
+    <string name="restaurant_location">Restaurant location</string>
+    <string name="customer_address">Customer address</string>
+    <string name="order_total">Order Total</string>
+    <string name="your_earnings">Your Earnings</string>
+    <string name="accept_order">Accept</string>
+    <string name="active_delivery">Active Delivery</string>
+    <string name="status_label">Status: %s</string>
+    <string name="confirm_delivery">Confirm Delivery</string>
+
+    <!-- Location -->
+    <string name="your_location_label">Your Location</string>
+    <string name="you_are_here">You are here</string>
+
+    <!-- DeliveryHistoryScreen -->
+    <string name="delivery_history">Delivery History</string>
+    <string name="no_deliveries_yet">No deliveries yet</string>
+    <string name="completed_deliveries_subtitle">Completed deliveries will appear here</string>
+    <string name="total_earnings">Total Earnings</string>
+    <string name="deliveries">Deliveries</string>
+
+    <!-- EarningsScreen -->
+    <string name="earnings">Earnings</string>
+    <string name="todays_earnings">Today\'s Earnings</string>
+    <string name="deliveries_today_singular">%d delivery today</string>
+    <string name="deliveries_today_plural">%d deliveries today</string>
+    <string name="total_deliveries">Total Deliveries</string>
+    <string name="todays_trips">Today\'s Trips</string>
+    <string name="total_trips">Total Trips</string>
+
+    <!-- Profile Placeholder -->
+    <string name="view_profile_settings">View Profile Settings</string>
+</resources>

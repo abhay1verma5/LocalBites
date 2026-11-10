@@ -1,4 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="core_ui_lib">LocalBites UI</string>
+
+    <!-- Common UI Components -->
+    <string name="pure_veg">PURE VEG</string>
+    <string name="currently_closed">Currently Closed</string>
+    <string name="closed">Closed</string>
+    <string name="free">FREE</string>
+    <string name="free_delivery">FREE Delivery</string>
+    <string name="bestseller">BESTSELLER</string>
+    <string name="add">ADD</string>
+    <string name="not_available_short">N/A</string>
+    <string name="available">Available</string>
+    <string name="unavailable">Unavailable</string>
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
+    <string name="clear">Clear</string>
+    <string name="total">Total</string>
+    <string name="restaurant">Restaurant</string>
+
+    <!-- Order Status Stepper Labels -->
+    <string name="status_placed">Placed</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_preparing">Preparing</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_picked_up">Picked Up</string>
+    <string name="status_on_the_way">On the Way</string>
+    <string name="status_delivered">Delivered</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_new">New</string>
+
+    <!-- Delivery time -->
+    <string name="delivery_time_min">%d min</string>
+    <string name="delivery_fee_format">&#8377;%d delivery</string>
+    <string name="min_order_format">Min &#8377;%d</string>
+
+    <!-- Language -->
+    <string name="language_english">English</string>
+    <string name="language_hindi">&#2361;&#2367;&#2306;&#2342;&#2368;</string>
+    <string name="switch_language">Switch Language</string>
 </resources>

@@ -17,6 +17,9 @@ interface OrderApi {
     @POST("orders/{id}/cancel/")
     suspend fun cancelOrder(@Path("id") id: Int, @Body reason: Map<String, String> = emptyMap()): Response<Order>
 
+    @GET("orders/{id}/delivery-location/")
+    suspend fun getDeliveryLocation(@Path("id") id: Int): Response<DeliveryLocationResponse>
+
     // Restaurant owner
     @GET("orders/restaurant/")
     suspend fun getRestaurantOrders(

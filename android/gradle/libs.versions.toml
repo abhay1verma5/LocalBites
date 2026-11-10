@@ -24,6 +24,7 @@ coroutines = "1.9.0"
 activity-compose = "1.9.3"
 core-ktx = "1.15.0"
 core-splashscreen = "1.0.1"
+appcompat = "1.7.0"
 material3 = "1.3.1"
 
 [libraries]
@@ -46,6 +47,7 @@ lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmode
 # Core
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 # Navigation
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }

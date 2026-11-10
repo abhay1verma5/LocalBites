@@ -1,12 +1,15 @@
 package com.localbites.feature.delivery.viewmodel
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.localbites.core.common.location.LocationManager
 import com.localbites.core.common.util.Resource
 import com.localbites.core.common.util.safeApiCall
 import com.localbites.core.network.api.DeliveryApi
 import com.localbites.core.network.model.Order
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,20 +28,71 @@ data class DeliveryUiState(
     val todayDeliveries: Int = 0,
     val todayEarnings: String = "0",
     val error: String? = null,
+    // Location
+    val currentLocation: Location? = null,
+    val locationPermissionGranted: Boolean = false,
 )
 
 @HiltViewModel
 class DeliveryViewModel @Inject constructor(
     private val deliveryApi: DeliveryApi,
+    val locationManager: LocationManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DeliveryUiState())
     val uiState: StateFlow<DeliveryUiState> = _uiState.asStateFlow()
 
+    private var locationTrackingJob: Job? = null
+
     init {
         loadProfile()
         loadEarnings()
     }
+
+    // --------------- Location ---------------
+
+    fun onLocationPermissionResult(granted: Boolean) {
+        _uiState.update { it.copy(locationPermissionGranted = granted) }
+        if (granted && _uiState.value.isOnline) {
+            startLocationTracking()
+        }
+    }
+
+    /**
+     * Starts continuous location tracking, sending updates to the backend.
+     * Should be called when the delivery partner goes online.
+     */
+    fun startLocationTracking() {
+        if (locationTrackingJob?.isActive == true) return
+        if (!locationManager.hasLocationPermission()) return
+
+        locationTrackingJob = viewModelScope.launch {
+            locationManager.getLocationUpdates(intervalMs = 10_000L).collect { location ->
+                _uiState.update { it.copy(currentLocation = location) }
+                // Send to backend
+                sendLocationToBackend(location.latitude, location.longitude)
+            }
+        }
+    }
+
+    fun stopLocationTracking() {
+        locationTrackingJob?.cancel()
+        locationTrackingJob = null
+    }
+
+    private fun sendLocationToBackend(latitude: Double, longitude: Double) {
+        viewModelScope.launch {
+            try {
+                deliveryApi.updateLocation(
+                    mapOf("latitude" to latitude, "longitude" to longitude)
+                )
+            } catch (_: Exception) {
+                // Silently ignore -- location updates are best-effort
+            }
+        }
+    }
+
+    // --------------- Profile ---------------
 
     private fun loadProfile() {
         viewModelScope.launch {
@@ -49,6 +103,9 @@ class DeliveryViewModel @Inject constructor(
                     }
                     if (result.data.isAvailable) {
                         loadAvailableOrders()
+                        if (locationManager.hasLocationPermission()) {
+                            startLocationTracking()
+                        }
                     }
                 }
                 is Resource.Error -> {
@@ -74,8 +131,12 @@ class DeliveryViewModel @Inject constructor(
                     }
                     if (nowOnline) {
                         loadAvailableOrders()
+                        if (locationManager.hasLocationPermission()) {
+                            startLocationTracking()
+                        }
                     } else {
                         _uiState.update { it.copy(availableOrders = emptyList()) }
+                        stopLocationTracking()
                     }
                 }
                 is Resource.Error -> {
@@ -209,5 +270,10 @@ class DeliveryViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopLocationTracking()
     }
 }

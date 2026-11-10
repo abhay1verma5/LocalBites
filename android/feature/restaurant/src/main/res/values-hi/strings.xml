@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bottom Navigation -->
+    <string name="tab_dashboard">डैशबोर्ड</string>
+    <string name="tab_orders">ऑर्डर</string>
+    <string name="tab_menu">मेनू</string>
+    <string name="tab_profile">प्रोफ़ाइल</string>
+
+    <!-- DashboardScreen -->
+    <string name="my_restaurant">मेरा रेस्टोरेंट</string>
+    <string name="accepting_orders">ऑर्डर स्वीकार कर रहे हैं</string>
+    <string name="not_accepting_orders">ऑर्डर स्वीकार नहीं कर रहे</string>
+    <string name="todays_orders">आज के ऑर्डर</string>
+    <string name="todays_revenue">आज की आय</string>
+    <string name="recent_orders">हाल के ऑर्डर</string>
+    <string name="no_orders_yet_today">आज अभी तक कोई ऑर्डर नहीं</string>
+    <string name="new_orders_will_appear">नए ऑर्डर यहां दिखाई देंगे</string>
+
+    <!-- IncomingOrdersScreen -->
+    <string name="incoming_orders">आने वाले ऑर्डर</string>
+    <string name="filter_all">सभी</string>
+    <string name="filter_new">नया</string>
+    <string name="filter_confirmed">पुष्टि</string>
+    <string name="filter_preparing">तैयारी</string>
+    <string name="filter_ready">तैयार</string>
+    <string name="no_orders_found">कोई ऑर्डर नहीं मिला</string>
+    <string name="orders_filter_empty_subtitle">चयनित फ़िल्टर से मेल खाने वाले ऑर्डर यहां दिखाई देंगे</string>
+    <string name="customer_label">ग्राहक: %s</string>
+    <string name="accept">स्वीकार करें</string>
+    <string name="mark_ready">तैयार चिह्नित करें</string>
+    <string name="note_label">नोट: %s</string>
+
+    <!-- MenuManagementScreen -->
+    <string name="menu_management">मेनू प्रबंधन</string>
+    <string name="add_menu_item">मेनू आइटम जोड़ें</string>
+    <string name="no_menu_items">कोई मेनू आइटम नहीं</string>
+    <string name="add_categories_to_start">शुरू करने के लिए श्रेणियां और आइटम जोड़ें</string>
+    <string name="items_count">%d आइटम</string>
+    <string name="collapse">संक्षिप्त करें</string>
+    <string name="expand">विस्तार करें</string>
+    <string name="add_menu_item_title">मेनू आइटम जोड़ें</string>
+    <string name="item_name">आइटम का नाम</string>
+    <string name="description">विवरण</string>
+    <string name="price_label">कीमत (&#8377;)</string>
+    <string name="food_type">खाद्य प्रकार</string>
+    <string name="food_type_veg">शाकाहारी</string>
+    <string name="food_type_non_veg">मांसाहारी</string>
+    <string name="food_type_egg">अंडा</string>
+    <string name="category">श्रेणी</string>
+    <string name="add_item">आइटम जोड़ें</string>
+
+    <!-- Profile Placeholder -->
+    <string name="profile_settings_coming_soon">रेस्टोरेंट प्रोफ़ाइल सेटिंग्स जल्द आ रही हैं</string>
+</resources>

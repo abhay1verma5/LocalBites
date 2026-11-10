@@ -1,5 +1,6 @@
 package com.localbites.feature.delivery.ui
 
+import android.Manifest
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -38,28 +39,58 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.localbites.core.network.model.Order
 import com.localbites.core.ui.components.EmptyState
-import com.localbites.core.ui.components.LoadingScreen
 import com.localbites.core.ui.theme.Green50
 import com.localbites.core.ui.theme.Green60
-import com.localbites.core.ui.theme.Green90
+import com.localbites.feature.delivery.R
 import com.localbites.feature.delivery.viewmodel.DeliveryViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AvailableOrdersScreen(
     viewModel: DeliveryViewModel,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Request location permission
+    val locationPermissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        ),
+    ) { permissions ->
+        val granted = permissions.values.any { it }
+        viewModel.onLocationPermissionResult(granted)
+    }
+
+    LaunchedEffect(Unit) {
+        if (locationPermissionsState.allPermissionsGranted) {
+            viewModel.onLocationPermissionResult(true)
+        } else {
+            locationPermissionsState.launchMultiplePermissionRequest()
+        }
+    }
 
     val statusBarColor by animateColorAsState(
         targetValue = if (state.isOnline) Green50 else MaterialTheme.colorScheme.surfaceVariant,
@@ -73,13 +104,14 @@ fun AvailableOrdersScreen(
                 title = {
                     Column {
                         Text(
-                            text = if (state.isOnline) "You're Online" else "You're Offline",
+                            text = if (state.isOnline) stringResource(R.string.youre_online)
+                            else stringResource(R.string.youre_offline),
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            text = if (state.isOnline) "Looking for orders nearby..."
-                            else "Go online to start receiving orders",
+                            text = if (state.isOnline) stringResource(R.string.looking_for_orders)
+                            else stringResource(R.string.go_online_to_start),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -108,17 +140,32 @@ fun AvailableOrdersScreen(
                     .fillMaxSize()
                     .padding(innerPadding),
             ) {
-                if (state.availableOrders.isEmpty() && !state.isLoading) {
-                    EmptyState(
-                        title = "No orders nearby",
-                        subtitle = "New orders will appear here when available",
-                    )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-                    ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+                ) {
+                    // Mini map showing current location
+                    if (state.currentLocation != null) {
+                        item(key = "mini_map") {
+                            DeliveryMiniMap(
+                                latitude = state.currentLocation!!.latitude,
+                                longitude = state.currentLocation!!.longitude,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp),
+                            )
+                        }
+                    }
+
+                    if (state.availableOrders.isEmpty() && !state.isLoading) {
+                        item {
+                            EmptyState(
+                                title = stringResource(R.string.no_orders_nearby),
+                                subtitle = stringResource(R.string.new_orders_when_available),
+                            )
+                        }
+                    } else {
                         items(
                             items = state.availableOrders,
                             key = { it.id },
@@ -140,6 +187,61 @@ fun AvailableOrdersScreen(
                 onConfirmDelivery = { viewModel.confirmDelivery(active.id) },
                 modifier = Modifier.padding(innerPadding),
             )
+        }
+    }
+}
+
+@Composable
+private fun DeliveryMiniMap(
+    latitude: Double,
+    longitude: Double,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        val position = LatLng(latitude, longitude)
+        val cameraPositionState = rememberCameraPositionState {
+            this.position = CameraPosition.fromLatLngZoom(position, 15f)
+        }
+
+        LaunchedEffect(latitude, longitude) {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                LatLng(latitude, longitude), 15f,
+            )
+        }
+
+        Column {
+            Text(
+                text = stringResource(R.string.your_location_label),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 4.dp),
+            )
+
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                cameraPositionState = cameraPositionState,
+                properties = MapProperties(isMyLocationEnabled = false),
+                uiSettings = MapUiSettings(
+                    zoomControlsEnabled = false,
+                    mapToolbarEnabled = false,
+                    scrollGesturesEnabled = false,
+                    zoomGesturesEnabled = false,
+                    tiltGesturesEnabled = false,
+                    rotationGesturesEnabled = false,
+                    myLocationButtonEnabled = false,
+                ),
+            ) {
+                Marker(
+                    state = MarkerState(position = position),
+                    title = stringResource(R.string.you_are_here),
+                )
+            }
         }
     }
 }
@@ -184,14 +286,14 @@ private fun OfflineMessage(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Go online to see available orders",
+            text = stringResource(R.string.go_online_to_see_orders),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Toggle the switch above to start accepting deliveries",
+            text = stringResource(R.string.toggle_switch_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
         )
@@ -217,7 +319,7 @@ private fun AvailableOrderCard(
         ) {
             // Restaurant name
             Text(
-                text = order.restaurantName ?: "Restaurant",
+                text = order.restaurantName ?: stringResource(com.localbites.core.ui.R.string.restaurant),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
@@ -230,19 +332,19 @@ private fun AvailableOrderCard(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Place,
-                    contentDescription = "Pickup",
+                    contentDescription = stringResource(R.string.pickup),
                     tint = Green60,
                     modifier = Modifier.size(20.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "PICKUP",
+                        text = stringResource(R.string.pickup),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = order.restaurantName ?: "Restaurant location",
+                        text = order.restaurantName ?: stringResource(R.string.restaurant_location),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -263,19 +365,19 @@ private fun AvailableOrderCard(
             ) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
-                    contentDescription = "Delivery",
+                    contentDescription = stringResource(R.string.deliver),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "DELIVER",
+                        text = stringResource(R.string.deliver),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = "Customer address",
+                        text = stringResource(R.string.customer_address),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -293,7 +395,7 @@ private fun AvailableOrderCard(
             ) {
                 Column {
                     Text(
-                        text = "Order Total",
+                        text = stringResource(R.string.order_total),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -305,7 +407,7 @@ private fun AvailableOrderCard(
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "Your Earnings",
+                        text = stringResource(R.string.your_earnings),
                         style = MaterialTheme.typography.labelSmall,
                         color = Green60,
                     )
@@ -332,7 +434,7 @@ private fun AvailableOrderCard(
                 ),
             ) {
                 Text(
-                    text = "Accept",
+                    text = stringResource(R.string.accept_order),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -370,19 +472,19 @@ private fun ActiveDeliveryBanner(
                 modifier = Modifier.padding(16.dp),
             ) {
                 Text(
-                    text = "Active Delivery",
+                    text = stringResource(R.string.active_delivery),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Order #${order.id} - ${order.restaurantName ?: "Restaurant"}",
+                    text = "Order #${order.id} - ${order.restaurantName ?: stringResource(com.localbites.core.ui.R.string.restaurant)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Text(
-                    text = "Status: ${order.status}",
+                    text = stringResource(R.string.status_label, order.status),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                 )
@@ -398,7 +500,7 @@ private fun ActiveDeliveryBanner(
                     ),
                 ) {
                     Text(
-                        text = "Confirm Delivery",
+                        text = stringResource(R.string.confirm_delivery),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,

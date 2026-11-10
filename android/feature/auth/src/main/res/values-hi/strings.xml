@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- PhoneInputScreen -->
+    <string name="app_logo_description">लोकलबाइट्स लोगो</string>
+    <string name="app_name_brand">लोकलबाइट्स</string>
+    <string name="welcome_to_localbites">लोकलबाइट्स में आपका स्वागत है</string>
+    <string name="order_delicious_food">स्थानीय रेस्टोरेंट से स्वादिष्ट खाना ऑर्डर करें</string>
+    <string name="phone_number">फ़ोन नंबर</string>
+    <string name="enter_10_digit_mobile">10 अंकों का मोबाइल नंबर दर्ज करें</string>
+    <string name="country_code_india">+91</string>
+    <string name="sending_otp">OTP भेज रहे हैं…</string>
+    <string name="send_otp">OTP भेजें</string>
+    <string name="terms_and_privacy">जारी रखकर, आप हमारी सेवा की शर्तों\nऔर गोपनीयता नीति से सहमत हैं</string>
+
+    <!-- OtpVerificationScreen -->
+    <string name="go_back">वापस जाएं</string>
+    <string name="verify_otp">OTP सत्यापित करें</string>
+    <string name="enter_6_digit_otp">6 अंकों का OTP दर्ज करें जो भेजा गया है</string>
+    <string name="verifying">सत्यापित हो रहा है…</string>
+    <string name="verify">सत्यापित करें</string>
+    <string name="didnt_receive_otp">OTP नहीं मिला?</string>
+    <string name="resend_otp">OTP पुनः भेजें</string>
+    <string name="resend_in_seconds">%d सेकंड में पुनः भेजें</string>
+
+    <!-- RoleSelectionScreen -->
+    <string name="choose_your_role">अपनी भूमिका चुनें</string>
+    <string name="how_would_you_like_to_use">आप लोकलबाइट्स का उपयोग कैसे करना चाहेंगे?</string>
+    <string name="order_food">खाना ऑर्डर करें</string>
+    <string name="customer">ग्राहक</string>
+    <string name="browse_restaurants_description">रेस्टोरेंट ब्राउज़ करें और स्वादिष्ट खाना ऑर्डर करें</string>
+    <string name="manage_restaurant">रेस्टोरेंट प्रबंधित करें</string>
+    <string name="restaurant_owner">रेस्टोरेंट मालिक</string>
+    <string name="list_your_restaurant_description">अपना रेस्टोरेंट सूचीबद्ध करें और ऑर्डर स्वीकार करें</string>
+    <string name="deliver_food">खाना डिलीवर करें</string>
+    <string name="delivery_partner">डिलीवरी पार्टनर</string>
+    <string name="earn_money_description">ऑर्डर डिलीवर करके पैसे कमाएं</string>
+    <string name="setting_up">सेट अप हो रहा है…</string>
+    <string name="continue_button">जारी रखें</string>
+    <string name="change_role_later">आप बाद में सेटिंग्स से अपनी भूमिका बदल सकते हैं</string>
+    <string name="selected">चयनित</string>
+</resources>

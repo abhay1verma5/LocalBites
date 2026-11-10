@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- PhoneInputScreen -->
+    <string name="app_logo_description">LocalBites Logo</string>
+    <string name="app_name_brand">LocalBites</string>
+    <string name="welcome_to_localbites">Welcome to LocalBites</string>
+    <string name="order_delicious_food">Order delicious food from local restaurants</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="enter_10_digit_mobile">Enter 10-digit mobile number</string>
+    <string name="country_code_india">+91</string>
+    <string name="sending_otp">Sending OTP…</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="terms_and_privacy">By continuing, you agree to our Terms of Service\nand Privacy Policy</string>
+
+    <!-- OtpVerificationScreen -->
+    <string name="go_back">Go back</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="enter_6_digit_otp">Enter the 6-digit OTP sent to</string>
+    <string name="verifying">Verifying…</string>
+    <string name="verify">Verify</string>
+    <string name="didnt_receive_otp">Didn\'t receive OTP?</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="resend_in_seconds">Resend in %ds</string>
+
+    <!-- RoleSelectionScreen -->
+    <string name="choose_your_role">Choose Your Role</string>
+    <string name="how_would_you_like_to_use">How would you like to use LocalBites?</string>
+    <string name="order_food">Order Food</string>
+    <string name="customer">Customer</string>
+    <string name="browse_restaurants_description">Browse restaurants and order delicious meals</string>
+    <string name="manage_restaurant">Manage Restaurant</string>
+    <string name="restaurant_owner">Restaurant Owner</string>
+    <string name="list_your_restaurant_description">List your restaurant and accept orders</string>
+    <string name="deliver_food">Deliver Food</string>
+    <string name="delivery_partner">Delivery Partner</string>
+    <string name="earn_money_description">Earn money by delivering orders</string>
+    <string name="setting_up">Setting up…</string>
+    <string name="continue_button">Continue</string>
+    <string name="change_role_later">You can change your role later from settings</string>
+    <string name="selected">Selected</string>
+</resources>

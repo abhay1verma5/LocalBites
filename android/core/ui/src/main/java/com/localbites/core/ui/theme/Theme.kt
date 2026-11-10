@@ -1,23 +1,38 @@
 package com.localbites.core.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+@Immutable
+data class ExtendedColors(
+    val charcoalText: Color = CharcoalText,
+    val secondaryText: Color = SecondaryText,
+    val ratingGreen: Color = RatingGreen,
+    val warmCream: Color = WarmCream,
+    val offerBlue: Color = OfferBlue,
+    val promoGold: Color = PromoGold,
+    val gradientScrimStart: Color = GradientScrimStart,
+    val gradientScrimMid: Color = GradientScrimMid,
+    val gradientScrimEnd: Color = GradientScrimEnd,
+)
+
+val LocalExtendedColors = staticCompositionLocalOf { ExtendedColors() }
+
 private val LightColorScheme = lightColorScheme(
     primary = Orange60,
-    onPrimary = Orange99,
+    onPrimary = Color.White,
     primaryContainer = Orange90,
     onPrimaryContainer = Orange10,
     secondary = Green60,
@@ -28,12 +43,12 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Brown95,
     tertiaryContainer = Brown90,
     onTertiaryContainer = Brown10,
-    background = Orange99,
-    onBackground = Neutral10,
-    surface = Orange99,
-    onSurface = Neutral10,
+    background = WarmCream,
+    onBackground = CharcoalText,
+    surface = Color.White,
+    onSurface = CharcoalText,
     surfaceVariant = Neutral95,
-    onSurfaceVariant = Neutral30,
+    onSurfaceVariant = SecondaryText,
     outline = Neutral50,
     outlineVariant = Neutral80,
 )
@@ -64,17 +79,10 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun LocalBitesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Disabled to preserve brand identity
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -85,9 +93,11 @@ fun LocalBitesTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = LocalBitesTypography,
-        content = content
-    )
+    CompositionLocalProvider(LocalExtendedColors provides ExtendedColors()) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = LocalBitesTypography,
+            content = content
+        )
+    }
 }

@@ -1,0 +1,26 @@
+databases:
+  - name: localbites-db
+    plan: free
+    databaseName: localbites
+    user: localbites_user
+
+services:
+  - type: web
+    name: localbites-api
+    plan: free
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn localbites.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: localbites.settings.prod
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: localbites-db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: PYTHON_VERSION
+        value: "3.12.0"

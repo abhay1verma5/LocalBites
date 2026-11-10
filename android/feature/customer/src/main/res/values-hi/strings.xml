@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bottom Navigation -->
+    <string name="tab_home">होम</string>
+    <string name="tab_orders">ऑर्डर</string>
+    <string name="tab_profile">प्रोफ़ाइल</string>
+
+    <!-- HomeScreen -->
+    <string name="deliver_to">डिलीवरी यहां</string>
+    <string name="current_location">वर्तमान स्थान</string>
+    <string name="location_label">स्थान</string>
+    <string name="search_restaurants_cuisines">रेस्टोरेंट, व्यंजन खोजें…</string>
+    <string name="search_label">खोजें</string>
+    <string name="clear_search">खोज साफ़ करें</string>
+    <string name="restaurants_near_you">आपके पास के रेस्टोरेंट</string>
+    <string name="no_restaurants_found">कोई रेस्टोरेंट नहीं मिला</string>
+    <string name="try_different_search">कोई अलग खोज या व्यंजन फ़िल्टर आज़माएं</string>
+    <string name="no_restaurants_in_area">अभी आपके क्षेत्र में कोई रेस्टोरेंट उपलब्ध नहीं है</string>
+    <string name="something_went_wrong">कुछ गलत हो गया</string>
+    <string name="delivery_time_label">डिलीवरी का समय</string>
+    <string name="delivery_fee_label">डिलीवरी शुल्क</string>
+
+    <!-- CustomerMainScreen Profile Placeholder -->
+    <string name="go_to_full_profile">पूरी प्रोफ़ाइल देखें</string>
+
+    <!-- RestaurantDetailScreen -->
+    <string name="restaurant_not_found">रेस्टोरेंट नहीं मिला</string>
+    <string name="menu_not_available">मेनू उपलब्ध नहीं है</string>
+    <string name="items_added_singular">%d आइटम जोड़ा गया</string>
+    <string name="items_added_plural">%d आइटम जोड़े गए</string>
+    <string name="view_cart">कार्ट देखें</string>
+
+    <!-- OrderHistoryScreen -->
+    <string name="my_orders">मेरे ऑर्डर</string>
+    <string name="no_orders_yet">अभी तक कोई ऑर्डर नहीं</string>
+    <string name="order_history_empty_subtitle">आपका ऑर्डर इतिहास यहां दिखाई देगा जब आप पहला ऑर्डर देंगे</string>
+    <string name="reorder">फिर से ऑर्डर करें</string>
+
+    <!-- OrderTrackingScreen -->
+    <string name="order_number">ऑर्डर #%d</string>
+    <string name="order_not_found">ऑर्डर नहीं मिला</string>
+    <string name="order_progress">ऑर्डर की प्रगति</string>
+    <string name="delivery_partner_label">डिलीवरी पार्टनर</string>
+    <string name="call_delivery_partner">डिलीवरी पार्टनर को कॉल करें</string>
+    <string name="order_items">ऑर्डर आइटम</string>
+    <string name="special_instructions">विशेष निर्देश</string>
+    <string name="payment_summary">भुगतान सारांश</string>
+    <string name="subtotal">उप-कुल</string>
+    <string name="delivery_fee">डिलीवरी शुल्क</string>
+    <string name="tax">कर</string>
+    <string name="discount">छूट</string>
+    <string name="total_paid">कुल भुगतान</string>
+    <string name="cancel_order">ऑर्डर रद्द करें</string>
+
+    <!-- Order Status Descriptions -->
+    <string name="status_placed_title">ऑर्डर दिया गया</string>
+    <string name="status_placed_desc">रेस्टोरेंट से पुष्टि की प्रतीक्षा है</string>
+    <string name="status_confirmed_title">ऑर्डर की पुष्टि हुई</string>
+    <string name="status_confirmed_desc">रेस्टोरेंट ने आपका ऑर्डर स्वीकार कर लिया</string>
+    <string name="status_preparing_title">आपका खाना तैयार हो रहा है</string>
+    <string name="status_preparing_desc">आपका खाना ध्यान से तैयार किया जा रहा है</string>
+    <string name="status_ready_title">खाना तैयार है</string>
+    <string name="status_ready_desc">डिलीवरी पार्टनर के पिक अप की प्रतीक्षा है</string>
+    <string name="status_picked_up_title">रास्ते में</string>
+    <string name="status_picked_up_desc">डिलीवरी पार्टनर ने आपका खाना पिक अप कर लिया</string>
+    <string name="status_on_the_way_title">लगभग पहुंच गया</string>
+    <string name="status_on_the_way_desc">आपका खाना आपके पास आ रहा है</string>
+    <string name="status_delivered_title">डिलीवर हो गया</string>
+    <string name="status_delivered_desc">आपका ऑर्डर डिलीवर हो गया है। आनंद लें!</string>
+    <string name="status_cancelled_title">रद्द किया गया</string>
+    <string name="status_cancelled_desc">यह ऑर्डर रद्द कर दिया गया है</string>
+
+    <!-- CartScreen -->
+    <string name="cart">कार्ट</string>
+    <string name="your_cart_is_empty">आपका कार्ट खाली है</string>
+    <string name="browse_restaurants_cart">रेस्टोरेंट ब्राउज़ करें और स्वादिष्ट आइटम अपने कार्ट में जोड़ें</string>
+    <string name="order_from">ऑर्डर यहां से</string>
+    <string name="remove_item">आइटम हटाएं</string>
+    <string name="decrease_quantity">मात्रा कम करें</string>
+    <string name="increase_quantity">मात्रा बढ़ाएं</string>
+    <string name="bill_details">बिल विवरण</string>
+    <string name="taxes_percent">कर (5%%)</string>
+    <string name="grand_total">कुल योग</string>
+    <string name="proceed_to_checkout">चेकआउट करें</string>
+
+    <!-- Profile -->
+    <string name="profile_user">उपयोगकर्ता</string>
+    <string name="profile_personal_info">व्यक्तिगत जानकारी</string>
+    <string name="profile_save">सहेजें</string>
+    <string name="profile_edit">संपादित करें</string>
+    <string name="profile_first_name">पहला नाम</string>
+    <string name="profile_last_name">अंतिम नाम</string>
+    <string name="profile_email">ईमेल</string>
+    <string name="profile_name">नाम</string>
+    <string name="profile_role">भूमिका</string>
+    <string name="profile_not_set">सेट नहीं</string>
+    <string name="profile_saved_addresses">सहेजे गए पते</string>
+    <string name="profile_no_addresses">अभी तक कोई सहेजा गया पता नहीं</string>
+    <string name="profile_logout">लॉगआउट</string>
+
+    <!-- Location -->
+    <string name="tap_to_enable_location">स्थान चालू करने के लिए टैप करें</string>
+    <string name="distance_label">%s दूर</string>
+
+    <!-- Order Tracking - Location -->
+    <string name="live_tracking">लाइव ट्रैकिंग</string>
+    <string name="your_location">आपका स्थान</string>
+</resources>

@@ -18,14 +18,14 @@ interface RestaurantApi {
     suspend fun getRestaurantDetail(@Path("id") id: Int): Response<RestaurantDetail>
 
     @GET("menu/restaurant/{restaurantId}/")
-    suspend fun getRestaurantMenu(@Path("restaurantId") restaurantId: Int): Response<List<MenuCategory>>
+    suspend fun getRestaurantMenu(@Path("restaurantId") restaurantId: Int): Response<PaginatedResponse<MenuCategory>>
 
     @GET("restaurants/{id}/ratings/")
     suspend fun getRestaurantRatings(@Path("id") id: Int): Response<PaginatedResponse<Map<String, Any>>>
 
     // Owner APIs
     @GET("restaurants/owner/")
-    suspend fun getOwnerRestaurants(): Response<List<Restaurant>>
+    suspend fun getOwnerRestaurants(): Response<PaginatedResponse<Restaurant>>
 
     @POST("restaurants/owner/")
     suspend fun createRestaurant(@Body restaurant: Map<String, Any>): Response<Restaurant>

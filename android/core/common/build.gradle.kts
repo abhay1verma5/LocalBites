@@ -30,4 +30,7 @@ dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
     api(libs.retrofit)
+
+    // Location
+    implementation(libs.play.services.location)
 }

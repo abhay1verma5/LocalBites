@@ -78,7 +78,13 @@ fun RootNavHost() {
         }
 
         composable(Routes.CUSTOMER_MAIN) {
-            CustomerMainScreen()
+            CustomerMainScreen(
+                onLoggedOut = {
+                    navController.navigate(Routes.PHONE_INPUT) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
         }
 
         composable(Routes.RESTAURANT_MAIN) {

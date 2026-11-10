@@ -33,6 +33,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:database"))
     implementation(project(":core:common"))
+    implementation(project(":core:data"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
@@ -41,4 +42,10 @@ dependencies {
     implementation(libs.lifecycle.runtime)
     implementation(libs.navigation.compose)
     implementation(libs.coil.compose)
+
+    // Location & Maps
+    implementation(libs.play.services.location)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.accompanist.permissions)
 }

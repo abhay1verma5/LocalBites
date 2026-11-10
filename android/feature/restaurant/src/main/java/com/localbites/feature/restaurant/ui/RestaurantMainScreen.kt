@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,35 +36,36 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.localbites.feature.restaurant.R
 import com.localbites.feature.restaurant.viewmodel.RestaurantOwnerViewModel
 
 private enum class RestaurantTab(
     val route: String,
-    val label: String,
+    val titleResId: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
 ) {
     DASHBOARD(
         route = "dashboard",
-        label = "Dashboard",
+        titleResId = R.string.tab_dashboard,
         selectedIcon = Icons.Filled.Home,
         unselectedIcon = Icons.Outlined.Home,
     ),
     ORDERS(
         route = "orders",
-        label = "Orders",
+        titleResId = R.string.tab_orders,
         selectedIcon = Icons.Filled.Receipt,
         unselectedIcon = Icons.Outlined.Receipt,
     ),
     MENU(
         route = "menu",
-        label = "Menu",
+        titleResId = R.string.tab_menu,
         selectedIcon = Icons.Filled.MenuBook,
         unselectedIcon = Icons.Outlined.MenuBook,
     ),
     PROFILE(
         route = "profile",
-        label = "Profile",
+        titleResId = R.string.tab_profile,
         selectedIcon = Icons.Filled.Person,
         unselectedIcon = Icons.Outlined.Person,
     ),
@@ -96,6 +98,7 @@ fun RestaurantMainScreen(
             ) {
                 RestaurantTab.entries.forEach { tab ->
                     val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true
+                    val label = stringResource(tab.titleResId)
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
@@ -110,12 +113,12 @@ fun RestaurantMainScreen(
                         icon = {
                             Icon(
                                 imageVector = if (selected) tab.selectedIcon else tab.unselectedIcon,
-                                contentDescription = tab.label,
+                                contentDescription = label,
                             )
                         },
                         label = {
                             Text(
-                                text = tab.label,
+                                text = label,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                             )
@@ -156,7 +159,7 @@ fun RestaurantMainScreen(
 @Composable
 private fun RestaurantProfilePlaceholder() {
     com.localbites.core.ui.components.EmptyState(
-        title = "Profile",
-        subtitle = "Restaurant profile settings coming soon",
+        title = stringResource(R.string.tab_profile),
+        subtitle = stringResource(R.string.profile_settings_coming_soon),
     )
 }

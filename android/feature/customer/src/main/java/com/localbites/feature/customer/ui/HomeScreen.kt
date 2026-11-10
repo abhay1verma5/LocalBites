@@ -1,21 +1,29 @@
 package com.localbites.feature.customer.ui
 
+import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DeliveryDining
+import androidx.compose.material.icons.outlined.Fastfood
+import androidx.compose.material.icons.outlined.LocalPizza
+import androidx.compose.material.icons.outlined.NearMe
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -25,32 +33,56 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.localbites.core.common.location.DistanceUtils
 import com.localbites.core.network.model.Restaurant
+import com.localbites.core.common.network.NetworkType
 import com.localbites.core.ui.components.EmptyState
+import com.localbites.core.ui.components.OfflineBanner
 import com.localbites.core.ui.components.RatingChip
 import com.localbites.core.ui.components.ShimmerBox
+import com.localbites.core.ui.theme.*
+import com.localbites.feature.customer.R
 import com.localbites.feature.customer.viewmodel.CustomerViewModel
+import kotlinx.coroutines.delay
 
 private val cuisineCategories = listOf(
-    "North Indian",
-    "South Indian",
-    "Chinese",
-    "Fast Food",
-    "Biryani",
-    "Pizza",
-    "Desserts",
-    "Beverages",
-    "Street Food",
-    "Healthy",
+    "North Indian" to Icons.Outlined.Restaurant,
+    "South Indian" to Icons.Outlined.Restaurant,
+    "Chinese" to Icons.Outlined.Fastfood,
+    "Fast Food" to Icons.Outlined.Fastfood,
+    "Biryani" to Icons.Outlined.Restaurant,
+    "Pizza" to Icons.Outlined.LocalPizza,
+    "Desserts" to Icons.Outlined.Fastfood,
+    "Beverages" to Icons.Outlined.Fastfood,
+    "Street Food" to Icons.Outlined.Fastfood,
+    "Healthy" to Icons.Outlined.Restaurant,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+private data class PromoBanner(
+    val title: String,
+    val subtitle: String,
+    val gradientColors: List<Color>,
+)
+
+private val promoBanners = listOf(
+    PromoBanner("50% OFF", "Up to \u20B9100 on first order", listOf(Color(0xFFFC8019), Color(0xFFFF6B35))),
+    PromoBanner("FREE Delivery", "On orders above \u20B9199", listOf(Color(0xFF48C479), Color(0xFF2E7D32))),
+    PromoBanner("Flat \u20B975 OFF", "Use code LOCALBITES75", listOf(Color(0xFF5D8ED5), Color(0xFF1565C0))),
+)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     viewModel: CustomerViewModel,
@@ -58,22 +90,60 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Request location permission
+    val locationPermissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        ),
+    ) { permissions ->
+        val granted = permissions.values.any { it }
+        viewModel.onLocationPermissionResult(granted)
+    }
+
+    LaunchedEffect(Unit) {
+        if (locationPermissionsState.allPermissionsGranted) {
+            viewModel.onLocationPermissionResult(true)
+        } else {
+            locationPermissionsState.launchMultiplePermissionRequest()
+        }
+    }
+
     PullToRefreshBox(
         isRefreshing = uiState.isRefreshing,
         onRefresh = { viewModel.refreshRestaurants() },
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(bottom = 16.dp),
         ) {
-            // Location bar
+            // Offline / slow network banner
             item {
-                LocationBar()
+                OfflineBanner(
+                    isOnline = uiState.isOnline,
+                    isSlowNetwork = uiState.networkType in listOf(
+                        NetworkType.CELLULAR_2G,
+                        NetworkType.CELLULAR_3G,
+                    ),
+                )
             }
 
-            // Search bar
+            // Location bar
             item {
-                SearchBar(
+                LocationBar(
+                    deliveryAddress = uiState.deliveryAddressText,
+                    hasPermission = uiState.locationPermissionGranted,
+                    onRequestPermission = {
+                        locationPermissionsState.launchMultiplePermissionRequest()
+                    },
+                )
+            }
+
+            // Pill search bar
+            item {
+                PillSearchBar(
                     query = uiState.searchQuery,
                     onQueryChange = { viewModel.onSearchQueryChanged(it) },
                     modifier = Modifier
@@ -82,9 +152,14 @@ fun HomeScreen(
                 )
             }
 
-            // Cuisine category chips
+            // Promo banner carousel
             item {
-                CuisineCategoryChips(
+                PromoBannerCarousel()
+            }
+
+            // Circular cuisine filters (Swiggy-style)
+            item {
+                CircularCuisineFilters(
                     selectedCuisine = uiState.selectedCuisine,
                     onCuisineSelected = { viewModel.onCuisineSelected(it) },
                 )
@@ -93,9 +168,10 @@ fun HomeScreen(
             // Section header
             item {
                 Text(
-                    text = "Restaurants Near You",
+                    text = stringResource(R.string.restaurants_near_you),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
+                    color = CharcoalText,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
             }
@@ -117,6 +193,7 @@ fun HomeScreen(
                 ) { restaurant ->
                     RestaurantCard(
                         restaurant = restaurant,
+                        distanceKm = uiState.restaurantDistances[restaurant.id],
                         onClick = { onRestaurantClick(restaurant.id) },
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                     )
@@ -127,11 +204,11 @@ fun HomeScreen(
             if (!uiState.isLoading && uiState.restaurants.isEmpty()) {
                 item {
                     EmptyState(
-                        title = "No restaurants found",
+                        title = stringResource(R.string.no_restaurants_found),
                         subtitle = if (uiState.searchQuery.isNotBlank())
-                            "Try a different search term or cuisine filter"
+                            stringResource(R.string.try_different_search)
                         else
-                            "No restaurants available in your area right now",
+                            stringResource(R.string.no_restaurants_in_area),
                     )
                 }
             }
@@ -146,7 +223,7 @@ fun HomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = "Something went wrong",
+                            text = stringResource(R.string.something_went_wrong),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.error,
                         )
@@ -158,7 +235,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         OutlinedButton(onClick = { viewModel.loadRestaurants() }) {
-                            Text("Retry")
+                            Text(stringResource(com.localbites.core.ui.R.string.retry))
                         }
                     }
                 }
@@ -168,7 +245,11 @@ fun HomeScreen(
 }
 
 @Composable
-private fun LocationBar() {
+private fun LocationBar(
+    deliveryAddress: String,
+    hasPermission: Boolean,
+    onRequestPermission: () -> Unit,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
@@ -177,26 +258,31 @@ private fun LocationBar() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable {
+                    if (!hasPermission) onRequestPermission()
+                }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Filled.LocationOn,
-                contentDescription = "Location",
+                contentDescription = stringResource(R.string.location_label),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Deliver to",
+                    text = stringResource(R.string.deliver_to),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = SecondaryText,
                 )
                 Text(
-                    text = "Current Location",
+                    text = if (hasPermission) deliveryAddress
+                    else stringResource(R.string.tap_to_enable_location),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
+                    color = CharcoalText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -205,8 +291,9 @@ private fun LocationBar() {
     }
 }
 
+// Pill-shaped search bar (Swiggy style)
 @Composable
-private fun SearchBar(
+private fun PillSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -214,18 +301,19 @@ private fun SearchBar(
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.height(52.dp),
         placeholder = {
             Text(
-                text = "Search restaurants, cuisines...",
+                text = stringResource(R.string.search_restaurants_cuisines),
                 style = MaterialTheme.typography.bodyMedium,
+                color = SecondaryText,
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = "Search",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                contentDescription = stringResource(R.string.search_label),
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
         trailingIcon = {
@@ -237,63 +325,172 @@ private fun SearchBar(
                 IconButton(onClick = { onQueryChange("") }) {
                     Icon(
                         imageVector = Icons.Outlined.Close,
-                        contentDescription = "Clear search",
+                        contentDescription = stringResource(R.string.clear_search),
                     )
                 }
             }
         },
         singleLine = true,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(50), // Full pill shape
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            unfocusedBorderColor = Color.Transparent,
             focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            unfocusedContainerColor = WarmCream,
         ),
     )
 }
 
+// Auto-scrolling promo banner carousel
 @Composable
-private fun CuisineCategoryChips(
-    selectedCuisine: String?,
-    onCuisineSelected: (String) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+private fun PromoBannerCarousel() {
+    val pagerState = rememberPagerState(pageCount = { promoBanners.size })
+
+    // Auto-scroll every 4 seconds
+    LaunchedEffect(pagerState) {
+        while (true) {
+            delay(4000)
+            val next = (pagerState.currentPage + 1) % promoBanners.size
+            pagerState.animateScrollToPage(next)
+        }
+    }
+
+    Column(
+        modifier = Modifier.padding(vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        cuisineCategories.forEach { cuisine ->
-            val isSelected = selectedCuisine == cuisine
-            FilterChip(
-                selected = isSelected,
-                onClick = { onCuisineSelected(cuisine) },
-                label = {
-                    Text(
-                        text = cuisine,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    )
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier.height(40.dp),
-            )
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(130.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            pageSpacing = 12.dp,
+        ) { page ->
+            val banner = promoBanners[page]
+            Card(
+                modifier = Modifier.fillMaxSize(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.horizontalGradient(banner.gradientColors)
+                        ),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+                    ) {
+                        Text(
+                            text = banner.title,
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = banner.subtitle,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.9f),
+                        )
+                    }
+                }
+            }
+        }
+
+        // Dot indicators
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            repeat(promoBanners.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .size(if (pagerState.currentPage == index) 8.dp else 6.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (pagerState.currentPage == index)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                        )
+                )
+            }
         }
     }
 }
 
+// Circular cuisine filters (Swiggy-style)
+@Composable
+private fun CircularCuisineFilters(
+    selectedCuisine: String?,
+    onCuisineSelected: (String) -> Unit,
+) {
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        itemsIndexed(cuisineCategories) { _, (cuisine, icon) ->
+            val isSelected = selectedCuisine == cuisine
+            Column(
+                modifier = Modifier
+                    .width(76.dp)
+                    .clickable { onCuisineSelected(cuisine) }
+                    .padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary
+                            else WarmCream
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = cuisine,
+                        modifier = Modifier.size(28.dp),
+                        tint = if (isSelected) Color.White else MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = cuisine,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else CharcoalText,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 10.sp,
+                )
+            }
+        }
+    }
+}
+
+// Photo-forward restaurant card with stronger gradient scrim
 @Composable
 private fun RestaurantCard(
     restaurant: Restaurant,
+    distanceKm: Double?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val pureVegText = stringResource(com.localbites.core.ui.R.string.pure_veg)
+    val currentlyClosedText = stringResource(com.localbites.core.ui.R.string.currently_closed)
+    val freeText = stringResource(com.localbites.core.ui.R.string.free)
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -303,11 +500,11 @@ private fun RestaurantCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column {
-            // Restaurant image
+            // Restaurant image - taller for photo-forward look
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(200.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
             ) {
                 AsyncImage(
@@ -317,18 +514,41 @@ private fun RestaurantCard(
                     contentScale = ContentScale.Crop,
                 )
 
-                // Gradient overlay at bottom of image for readability
+                // Stronger 3-stop gradient scrim for text readability
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(60.dp)
+                        .height(100.dp)
                         .align(Alignment.BottomCenter)
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.4f)),
+                                colors = listOf(
+                                    GradientScrimStart,
+                                    GradientScrimMid,
+                                    GradientScrimEnd,
+                                ),
                             )
                         ),
                 )
+
+                // Offer badge overlay (top-left)
+                if (restaurant.deliveryFee == 0.0) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(12.dp),
+                        shape = RoundedCornerShape(6.dp),
+                        color = OfferBlue,
+                    ) {
+                        Text(
+                            text = "FREE DELIVERY",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
 
                 // Rating chip on the image
                 RatingChip(
@@ -339,6 +559,19 @@ private fun RestaurantCard(
                         .padding(12.dp),
                 )
 
+                // Restaurant name overlaid on scrim for Swiggy feel
+                Text(
+                    text = restaurant.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 12.dp, bottom = 36.dp, end = 60.dp),
+                )
+
                 // Veg only badge
                 if (restaurant.isVegOnly) {
                     Surface(
@@ -346,10 +579,10 @@ private fun RestaurantCard(
                             .align(Alignment.TopEnd)
                             .padding(12.dp),
                         shape = RoundedCornerShape(6.dp),
-                        color = Color(0xFF0F8A0F),
+                        color = VegGreen,
                     ) {
                         Text(
-                            text = "PURE VEG",
+                            text = pureVegText,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
                             color = Color.White,
@@ -371,7 +604,7 @@ private fun RestaurantCard(
                             color = MaterialTheme.colorScheme.errorContainer,
                         ) {
                             Text(
-                                text = "Currently Closed",
+                                text = currentlyClosedText,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                 style = MaterialTheme.typography.titleSmall,
                                 color = MaterialTheme.colorScheme.onErrorContainer,
@@ -382,75 +615,67 @@ private fun RestaurantCard(
                 }
             }
 
-            // Restaurant info
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            // Compact delivery info row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = restaurant.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
                     text = restaurant.cuisineType,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SecondaryText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                // Delivery time
+                Icon(
+                    imageVector = Icons.Outlined.Schedule,
+                    contentDescription = stringResource(R.string.delivery_time_label),
+                    modifier = Modifier.size(14.dp),
+                    tint = SecondaryText,
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(
+                    text = stringResource(com.localbites.core.ui.R.string.delivery_time_min, restaurant.avgDeliveryTime),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = SecondaryText,
+                )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    // Delivery time
+                Spacer(modifier = Modifier.width(10.dp))
+
+                // Delivery fee
+                Icon(
+                    imageVector = Icons.Outlined.DeliveryDining,
+                    contentDescription = stringResource(R.string.delivery_fee_label),
+                    modifier = Modifier.size(14.dp),
+                    tint = SecondaryText,
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(
+                    text = if (restaurant.deliveryFee == 0.0) freeText else "\u20B9${restaurant.deliveryFee.toInt()}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (restaurant.deliveryFee == 0.0) RatingGreen else SecondaryText,
+                    fontWeight = if (restaurant.deliveryFee == 0.0) FontWeight.Bold else FontWeight.Normal,
+                )
+
+                // Distance
+                if (distanceKm != null) {
+                    Spacer(modifier = Modifier.width(10.dp))
                     Icon(
-                        imageVector = Icons.Outlined.Schedule,
-                        contentDescription = "Delivery time",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        imageVector = Icons.Outlined.NearMe,
+                        contentDescription = stringResource(R.string.distance_label),
+                        modifier = Modifier.size(14.dp),
+                        tint = SecondaryText,
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(3.dp))
                     Text(
-                        text = "${restaurant.avgDeliveryTime} min",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Delivery fee
-                    Icon(
-                        imageVector = Icons.Outlined.DeliveryDining,
-                        contentDescription = "Delivery fee",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (restaurant.deliveryFee == 0.0) "FREE" else "₹${restaurant.deliveryFee.toInt()}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (restaurant.deliveryFee == 0.0)
-                            MaterialTheme.colorScheme.secondary
-                        else
-                            MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = if (restaurant.deliveryFee == 0.0) FontWeight.Bold else FontWeight.Normal,
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    // Min order
-                    Text(
-                        text = "Min ₹${restaurant.minOrderAmount.toInt()}",
+                        text = DistanceUtils.formatDistance(distanceKm),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = SecondaryText,
                     )
                 }
             }
@@ -469,35 +694,24 @@ private fun RestaurantCardShimmer(modifier: Modifier = Modifier) {
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp),
+                    .height(200.dp),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             )
-            Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 ShimmerBox(
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .height(20.dp),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                ShimmerBox(
-                    modifier = Modifier
-                        .fillMaxWidth(0.4f)
+                        .weight(1f)
                         .height(14.dp),
                 )
-                Spacer(modifier = Modifier.height(12.dp))
-                Row {
-                    ShimmerBox(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(14.dp),
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    ShimmerBox(
-                        modifier = Modifier
-                            .width(60.dp)
-                            .height(14.dp),
-                    )
-                }
+                Spacer(modifier = Modifier.width(16.dp))
+                ShimmerBox(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(14.dp),
+                )
             }
         }
     }

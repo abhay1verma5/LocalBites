@@ -1,5 +1,7 @@
 package com.localbites.feature.auth.ui
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,7 +24,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,14 +54,23 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.localbites.feature.auth.R
 import com.localbites.feature.auth.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,6 +125,22 @@ fun OtpVerificationScreen(
         }
     }
 
+    // Shake animation state for error
+    val shakeOffset = remember { Animatable(0f) }
+
+    // Trigger shake on error
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null) {
+            for (i in 0..5) {
+                shakeOffset.animateTo(
+                    targetValue = if (i % 2 == 0) 15f else -15f,
+                    animationSpec = spring(dampingRatio = 0.3f, stiffness = 5000f),
+                )
+            }
+            shakeOffset.animateTo(0f)
+        }
+    }
+
     // Request focus for the OTP field
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -130,7 +157,7 @@ fun OtpVerificationScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back",
+                            contentDescription = stringResource(R.string.go_back),
                         )
                     }
                 },
@@ -152,27 +179,25 @@ fun OtpVerificationScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Lock icon
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
+            // Lottie verification animation
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(com.localbites.core.ui.R.raw.order_success)
+            )
+            val lottieProgress by animateLottieCompositionAsState(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+            )
+            LottieAnimation(
+                composition = composition,
+                progress = { lottieProgress },
+                modifier = Modifier.size(120.dp),
+            )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Heading
             Text(
-                text = "Verify OTP",
+                text = stringResource(R.string.verify_otp),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -182,7 +207,7 @@ fun OtpVerificationScreen(
 
             // Subtitle with phone number
             Text(
-                text = "Enter the 6-digit OTP sent to",
+                text = stringResource(R.string.enter_6_digit_otp),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -199,7 +224,7 @@ fun OtpVerificationScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // OTP Input: 6 individual boxes
+            // OTP Input: 6 individual boxes with shake animation on error
             BasicTextField(
                 value = otpValue,
                 onValueChange = { value ->
@@ -207,7 +232,9 @@ fun OtpVerificationScreen(
                         otpValue = value
                     }
                 },
-                modifier = Modifier.focusRequester(focusRequester),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .offset { IntOffset(shakeOffset.value.roundToInt(), 0) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword,
                 ),
@@ -268,7 +295,8 @@ fun OtpVerificationScreen(
             Button(
                 onClick = {
                     keyboardController?.hide()
-                    viewModel.verifyOtp(phone, otpValue)
+                    val fullPhone = if (phone.startsWith("+")) phone else "+91$phone"
+                    viewModel.verifyOtp(fullPhone, otpValue)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -294,13 +322,13 @@ fun OtpVerificationScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Verifying...",
+                        text = stringResource(R.string.verifying),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
                 } else {
                     Text(
-                        text = "Verify",
+                        text = stringResource(R.string.verify),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -315,7 +343,7 @@ fun OtpVerificationScreen(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "Didn't receive OTP?",
+                    text = stringResource(R.string.didnt_receive_otp),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -323,14 +351,15 @@ fun OtpVerificationScreen(
                 if (canResend) {
                     TextButton(
                         onClick = {
-                            viewModel.sendOtp(phone)
+                            val fullPhone = if (phone.startsWith("+")) phone else "+91$phone"
+                            viewModel.sendOtp(fullPhone)
                             resendTimerSeconds = 30
                             otpValue = ""
                         },
                         modifier = Modifier.height(48.dp),
                     ) {
                         Text(
-                            text = "Resend OTP",
+                            text = stringResource(R.string.resend_otp),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
@@ -339,7 +368,7 @@ fun OtpVerificationScreen(
                 } else {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Resend in ${resendTimerSeconds}s",
+                        text = stringResource(R.string.resend_in_seconds, resendTimerSeconds),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),

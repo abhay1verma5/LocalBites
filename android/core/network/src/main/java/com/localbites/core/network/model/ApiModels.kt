@@ -71,6 +71,8 @@ data class Restaurant(
     @Json(name = "is_veg_only") val isVegOnly: Boolean,
     @Json(name = "is_accepting_orders") val isAcceptingOrders: Boolean,
     val city: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 @JsonClass(generateAdapter = true)
@@ -93,6 +95,8 @@ data class RestaurantDetail(
     @Json(name = "is_accepting_orders") val isAcceptingOrders: Boolean,
     @Json(name = "opening_time") val openingTime: String,
     @Json(name = "closing_time") val closingTime: String,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 // Menu
@@ -197,6 +201,14 @@ data class DeliveryEarnings(
     @Json(name = "total_earnings") val totalEarnings: String,
     @Json(name = "today_deliveries") val todayDeliveries: Int,
     @Json(name = "today_earnings") val todayEarnings: String,
+)
+
+// Delivery Location Tracking
+@JsonClass(generateAdapter = true)
+data class DeliveryLocationResponse(
+    val latitude: Double,
+    val longitude: Double,
+    @Json(name = "updated_at") val updatedAt: String? = null,
 )
 
 // Pagination wrapper

@@ -39,4 +39,10 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.runtime)
     implementation(libs.navigation.compose)
+
+    // Location & Maps
+    implementation(libs.play.services.location)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.accompanist.permissions)
 }

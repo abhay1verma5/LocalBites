@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bottom Navigation -->
+    <string name="tab_orders">ऑर्डर</string>
+    <string name="tab_history">इतिहास</string>
+    <string name="tab_earnings">कमाई</string>
+    <string name="tab_profile">प्रोफ़ाइल</string>
+
+    <!-- AvailableOrdersScreen -->
+    <string name="youre_online">आप ऑनलाइन हैं</string>
+    <string name="youre_offline">आप ऑफ़लाइन हैं</string>
+    <string name="looking_for_orders">पास के ऑर्डर खोज रहे हैं…</string>
+    <string name="go_online_to_start">ऑर्डर प्राप्त करने के लिए ऑनलाइन जाएं</string>
+    <string name="no_orders_nearby">पास में कोई ऑर्डर नहीं</string>
+    <string name="new_orders_when_available">उपलब्ध होने पर नए ऑर्डर यहां दिखाई देंगे</string>
+    <string name="go_online_to_see_orders">उपलब्ध ऑर्डर देखने के लिए ऑनलाइन जाएं</string>
+    <string name="toggle_switch_hint">डिलीवरी स्वीकार करने के लिए ऊपर का स्विच टॉगल करें</string>
+    <string name="pickup">पिकअप</string>
+    <string name="deliver">डिलीवर</string>
+    <string name="restaurant_location">रेस्टोरेंट का स्थान</string>
+    <string name="customer_address">ग्राहक का पता</string>
+    <string name="order_total">ऑर्डर कुल</string>
+    <string name="your_earnings">आपकी कमाई</string>
+    <string name="accept_order">स्वीकार करें</string>
+    <string name="active_delivery">सक्रिय डिलीवरी</string>
+    <string name="status_label">स्थिति: %s</string>
+    <string name="confirm_delivery">डिलीवरी की पुष्टि करें</string>
+
+    <!-- DeliveryHistoryScreen -->
+    <string name="delivery_history">डिलीवरी इतिहास</string>
+    <string name="no_deliveries_yet">अभी तक कोई डिलीवरी नहीं</string>
+    <string name="completed_deliveries_subtitle">पूर्ण डिलीवरी यहां दिखाई देंगी</string>
+    <string name="total_earnings">कुल कमाई</string>
+    <string name="deliveries">डिलीवरी</string>
+
+    <!-- EarningsScreen -->
+    <string name="earnings">कमाई</string>
+    <string name="todays_earnings">आज की कमाई</string>
+    <string name="deliveries_today_singular">%d डिलीवरी आज</string>
+    <string name="deliveries_today_plural">%d डिलीवरी आज</string>
+    <string name="total_deliveries">कुल डिलीवरी</string>
+    <string name="todays_trips">आज की यात्राएं</string>
+    <string name="total_trips">कुल यात्राएं</string>
+
+    <!-- Profile Placeholder -->
+    <string name="view_profile_settings">प्रोफ़ाइल सेटिंग्स देखें</string>
+</resources>

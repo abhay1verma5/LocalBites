@@ -37,5 +37,6 @@ dependencies {
     api(libs.compose.foundation)
     api(libs.coil.compose)
     api(libs.lottie.compose)
+    api(libs.appcompat)
     debugApi(libs.compose.ui.tooling)
 }

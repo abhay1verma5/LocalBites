@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.localbites.feature.customer.R
 import com.localbites.feature.customer.viewmodel.CustomerViewModel
 
 // Navigation routes for customer screens
@@ -40,25 +42,25 @@ object CustomerRoutes {
 // Bottom navigation items
 enum class CustomerBottomTab(
     val route: String,
-    val title: String,
+    val titleResId: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
 ) {
     HOME(
         route = CustomerRoutes.HOME,
-        title = "Home",
+        titleResId = R.string.tab_home,
         selectedIcon = Icons.Filled.Home,
         unselectedIcon = Icons.Outlined.Home,
     ),
     ORDERS(
         route = CustomerRoutes.ORDER_HISTORY,
-        title = "Orders",
+        titleResId = R.string.tab_orders,
         selectedIcon = Icons.Filled.Receipt,
         unselectedIcon = Icons.Outlined.Receipt,
     ),
     PROFILE(
         route = CustomerRoutes.PROFILE,
-        title = "Profile",
+        titleResId = R.string.tab_profile,
         selectedIcon = Icons.Filled.Person,
         unselectedIcon = Icons.Outlined.Person,
     ),
@@ -68,6 +70,7 @@ enum class CustomerBottomTab(
 fun CustomerMainScreen(
     viewModel: CustomerViewModel = hiltViewModel(),
     onNavigateToProfile: () -> Unit = {},
+    onLoggedOut: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -90,6 +93,7 @@ fun CustomerMainScreen(
                         val selected = currentDestination?.hierarchy?.any {
                             it.route == tab.route
                         } == true
+                        val title = stringResource(tab.titleResId)
 
                         NavigationBarItem(
                             selected = selected,
@@ -105,12 +109,12 @@ fun CustomerMainScreen(
                             icon = {
                                 Icon(
                                     imageVector = if (selected) tab.selectedIcon else tab.unselectedIcon,
-                                    contentDescription = tab.title,
+                                    contentDescription = title,
                                 )
                             },
                             label = {
                                 Text(
-                                    text = tab.title,
+                                    text = title,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                                 )
@@ -189,34 +193,13 @@ fun CustomerMainScreen(
             }
 
             composable(CustomerRoutes.PROFILE) {
-                // Placeholder profile screen; delegates to app-level profile
-                CustomerProfilePlaceholder(onNavigateToProfile = onNavigateToProfile)
+                ProfileScreen(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    onLoggedOut = onLoggedOut,
+                )
             }
         }
     }
 }
 
-@Composable
-private fun CustomerProfilePlaceholder(onNavigateToProfile: () -> Unit) {
-    // Minimal placeholder -- the real profile screen lives in a shared module
-    androidx.compose.foundation.layout.Box(
-        modifier = Modifier,
-        contentAlignment = androidx.compose.ui.Alignment.Center,
-    ) {
-        androidx.compose.foundation.layout.Column(
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp),
-        ) {
-            Text(
-                text = "Profile",
-                style = MaterialTheme.typography.headlineMedium,
-            )
-            androidx.compose.foundation.layout.Spacer(
-                modifier = Modifier.padding(top = 16.dp)
-            )
-            Button(onClick = onNavigateToProfile) {
-                Text("Go to Full Profile")
-            }
-        }
-    }
-}

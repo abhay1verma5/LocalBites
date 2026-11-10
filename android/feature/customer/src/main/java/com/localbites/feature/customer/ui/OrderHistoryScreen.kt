@@ -3,6 +3,7 @@ package com.localbites.feature.customer.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.History
@@ -12,14 +13,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localbites.core.network.model.Order
+import com.localbites.core.common.network.NetworkType
 import com.localbites.core.ui.components.EmptyState
 import com.localbites.core.ui.components.LoadingScreen
+import com.localbites.core.ui.components.LottieEmptyState
+import com.localbites.core.ui.components.OfflineBanner
 import com.localbites.core.ui.theme.*
+import com.localbites.feature.customer.R
 import com.localbites.feature.customer.viewmodel.CustomerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +45,7 @@ fun OrderHistoryScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "My Orders",
+                        text = stringResource(R.string.my_orders),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -50,30 +56,38 @@ fun OrderHistoryScreen(
             )
         },
     ) { innerPadding ->
-        when {
-            uiState.isLoading && uiState.orders.isEmpty() -> {
-                LoadingScreen(modifier = Modifier.padding(innerPadding))
-            }
-            uiState.orders.isEmpty() -> {
-                EmptyOrdersState(modifier = Modifier.padding(innerPadding))
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(
-                        items = uiState.orders,
-                        key = { it.id },
-                    ) { order ->
-                        OrderHistoryCard(
-                            order = order,
-                            onOrderClick = { onOrderClick(order.id) },
-                            onReorderClick = { viewModel.reorder(order) },
-                        )
+        Column(modifier = Modifier.padding(innerPadding)) {
+            OfflineBanner(
+                isOnline = uiState.isOnline,
+                isSlowNetwork = uiState.networkType in listOf(
+                    NetworkType.CELLULAR_2G,
+                    NetworkType.CELLULAR_3G,
+                ),
+            )
+
+            when {
+                uiState.isLoading && uiState.orders.isEmpty() -> {
+                    LoadingScreen()
+                }
+                uiState.orders.isEmpty() -> {
+                    EmptyOrdersState()
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        items(
+                            items = uiState.orders,
+                            key = { it.id },
+                        ) { order ->
+                            OrderHistoryCard(
+                                order = order,
+                                onOrderClick = { onOrderClick(order.id) },
+                                onReorderClick = { viewModel.reorder(order) },
+                            )
+                        }
                     }
                 }
             }
@@ -83,32 +97,12 @@ fun OrderHistoryScreen(
 
 @Composable
 private fun EmptyOrdersState(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.History,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "No orders yet",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Your order history will appear here once you place your first order",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+    LottieEmptyState(
+        animationRes = com.localbites.core.ui.R.raw.empty_orders,
+        title = stringResource(R.string.no_orders_yet),
+        subtitle = stringResource(R.string.order_history_empty_subtitle),
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -117,6 +111,10 @@ private fun OrderHistoryCard(
     onOrderClick: () -> Unit,
     onReorderClick: () -> Unit,
 ) {
+    val totalLabel = stringResource(com.localbites.core.ui.R.string.total)
+    val reorderText = stringResource(R.string.reorder)
+    val restaurantFallback = stringResource(com.localbites.core.ui.R.string.restaurant)
+
     Card(
         onClick = onOrderClick,
         modifier = Modifier.fillMaxWidth(),
@@ -127,39 +125,35 @@ private fun OrderHistoryCard(
         Column(
             modifier = Modifier.padding(16.dp),
         ) {
-            // Header row: restaurant name + status badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = order.restaurantName ?: "Restaurant",
+                    text = order.restaurantName ?: restaurantFallback,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    color = CharcoalText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
-
                 Spacer(modifier = Modifier.width(8.dp))
-
                 OrderStatusBadge(status = order.status)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Date
             if (order.placedAt != null) {
                 Text(
                     text = formatOrderDate(order.placedAt!!),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = SecondaryText,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Items summary
             val itemsSummary = order.items?.joinToString(", ") { item ->
                 "${item.quantity}x ${item.name}"
             } ?: "Order #${order.id}"
@@ -167,18 +161,15 @@ private fun OrderHistoryCard(
             Text(
                 text = itemsSummary,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = SecondaryText,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
-
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Bottom row: total + reorder button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -186,12 +177,12 @@ private fun OrderHistoryCard(
             ) {
                 Column {
                     Text(
-                        text = "Total",
+                        text = totalLabel,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = "₹${String.format("%.0f", order.total)}",
+                        text = "\u20B9${String.format("%.0f", order.total)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -214,7 +205,7 @@ private fun OrderHistoryCard(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Reorder",
+                            text = reorderText,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -227,15 +218,24 @@ private fun OrderHistoryCard(
 
 @Composable
 private fun OrderStatusBadge(status: String) {
+    val placedLabel = stringResource(com.localbites.core.ui.R.string.status_placed)
+    val confirmedLabel = stringResource(com.localbites.core.ui.R.string.status_confirmed)
+    val preparingLabel = stringResource(com.localbites.core.ui.R.string.status_preparing)
+    val readyLabel = stringResource(com.localbites.core.ui.R.string.status_ready)
+    val pickedUpLabel = stringResource(com.localbites.core.ui.R.string.status_picked_up)
+    val onTheWayLabel = stringResource(com.localbites.core.ui.R.string.status_on_the_way)
+    val deliveredLabel = stringResource(com.localbites.core.ui.R.string.status_delivered)
+    val cancelledLabel = stringResource(com.localbites.core.ui.R.string.status_cancelled)
+
     val (backgroundColor, textColor, label) = when (status) {
-        "PLACED" -> Triple(OrderPlaced.copy(alpha = 0.15f), OrderPlaced, "Placed")
-        "CONFIRMED" -> Triple(OrderPlaced.copy(alpha = 0.15f), OrderPlaced, "Confirmed")
-        "PREPARING" -> Triple(OrderPreparing.copy(alpha = 0.15f), OrderPreparing, "Preparing")
-        "READY" -> Triple(OrderReady.copy(alpha = 0.15f), OrderReady, "Ready")
-        "PICKED_UP" -> Triple(OrderReady.copy(alpha = 0.15f), OrderReady, "Picked Up")
-        "ON_THE_WAY" -> Triple(OrderReady.copy(alpha = 0.15f), OrderReady, "On the Way")
-        "DELIVERED" -> Triple(OrderDelivered.copy(alpha = 0.15f), OrderDelivered, "Delivered")
-        "CANCELLED" -> Triple(OrderCancelled.copy(alpha = 0.15f), OrderCancelled, "Cancelled")
+        "PLACED" -> Triple(OrderPlaced.copy(alpha = 0.15f), OrderPlaced, placedLabel)
+        "CONFIRMED" -> Triple(OrderPlaced.copy(alpha = 0.15f), OrderPlaced, confirmedLabel)
+        "PREPARING" -> Triple(OrderPreparing.copy(alpha = 0.15f), OrderPreparing, preparingLabel)
+        "READY" -> Triple(OrderReady.copy(alpha = 0.15f), OrderReady, readyLabel)
+        "PICKED_UP" -> Triple(OrderReady.copy(alpha = 0.15f), OrderReady, pickedUpLabel)
+        "ON_THE_WAY" -> Triple(OrderReady.copy(alpha = 0.15f), OrderReady, onTheWayLabel)
+        "DELIVERED" -> Triple(OrderDelivered.copy(alpha = 0.15f), OrderDelivered, deliveredLabel)
+        "CANCELLED" -> Triple(OrderCancelled.copy(alpha = 0.15f), OrderCancelled, cancelledLabel)
         else -> Triple(Color.Gray.copy(alpha = 0.15f), Color.Gray, status)
     }
 
@@ -253,11 +253,6 @@ private fun OrderStatusBadge(status: String) {
     }
 }
 
-/**
- * Formats an ISO date string into a user-friendly format.
- * Input example: "2024-01-15T10:30:00Z"
- * Output example: "15 Jan 2024, 10:30 AM"
- */
 private fun formatOrderDate(isoDate: String): String {
     return try {
         val parts = isoDate.split("T")

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_ui_lib">लोकलबाइट्स UI</string>
+
+    <!-- Common UI Components -->
+    <string name="pure_veg">शुद्ध शाकाहारी</string>
+    <string name="currently_closed">अभी बंद है</string>
+    <string name="closed">बंद</string>
+    <string name="free">मुफ़्त</string>
+    <string name="free_delivery">मुफ़्त डिलीवरी</string>
+    <string name="bestseller">बेस्टसेलर</string>
+    <string name="add">जोड़ें</string>
+    <string name="not_available_short">उपलब्ध नहीं</string>
+    <string name="available">उपलब्ध</string>
+    <string name="unavailable">अनुपलब्ध</string>
+    <string name="retry">पुनः प्रयास</string>
+    <string name="back">वापस</string>
+    <string name="clear">हटाएं</string>
+    <string name="total">कुल</string>
+    <string name="restaurant">रेस्टोरेंट</string>
+
+    <!-- Order Status Stepper Labels -->
+    <string name="status_placed">ऑर्डर दिया गया</string>
+    <string name="status_confirmed">ऑर्डर की पुष्टि हुई</string>
+    <string name="status_preparing">तैयार हो रहा है</string>
+    <string name="status_ready">तैयार है</string>
+    <string name="status_picked_up">पिक अप किया</string>
+    <string name="status_on_the_way">रास्ते में</string>
+    <string name="status_delivered">डिलीवर हो गया</string>
+    <string name="status_cancelled">रद्द किया गया</string>
+    <string name="status_new">नया</string>
+
+    <!-- Delivery time -->
+    <string name="delivery_time_min">%d मिनट</string>
+    <string name="delivery_fee_format">&#8377;%d डिलीवरी</string>
+    <string name="min_order_format">न्यूनतम &#8377;%d</string>
+
+    <!-- Language -->
+    <string name="language_english">English</string>
+    <string name="language_hindi">&#2361;&#2367;&#2306;&#2342;&#2368;</string>
+    <string name="switch_language">भाषा बदलें</string>
+</resources>

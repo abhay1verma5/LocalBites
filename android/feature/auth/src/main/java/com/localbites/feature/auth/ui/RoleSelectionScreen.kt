@@ -50,17 +50,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.localbites.feature.auth.R
 import com.localbites.feature.auth.viewmodel.AuthViewModel
 
 private data class RoleOption(
     val roleKey: String,
-    val title: String,
-    val subtitle: String,
-    val description: String,
+    val titleResId: Int,
+    val subtitleResId: Int,
+    val descriptionResId: Int,
     val icon: ImageVector,
 )
 
@@ -77,23 +79,23 @@ fun RoleSelectionScreen(
         listOf(
             RoleOption(
                 roleKey = "CUSTOMER",
-                title = "Order Food",
-                subtitle = "Customer",
-                description = "Browse restaurants and order delicious meals",
+                titleResId = R.string.order_food,
+                subtitleResId = R.string.customer,
+                descriptionResId = R.string.browse_restaurants_description,
                 icon = Icons.Default.ShoppingBag,
             ),
             RoleOption(
                 roleKey = "RESTAURANT",
-                title = "Manage Restaurant",
-                subtitle = "Restaurant Owner",
-                description = "List your restaurant and accept orders",
+                titleResId = R.string.manage_restaurant,
+                subtitleResId = R.string.restaurant_owner,
+                descriptionResId = R.string.list_your_restaurant_description,
                 icon = Icons.Default.Restaurant,
             ),
             RoleOption(
                 roleKey = "DELIVERY",
-                title = "Deliver Food",
-                subtitle = "Delivery Partner",
-                description = "Earn money by delivering orders",
+                titleResId = R.string.deliver_food,
+                subtitleResId = R.string.delivery_partner,
+                descriptionResId = R.string.earn_money_description,
                 icon = Icons.Default.DeliveryDining,
             ),
         )
@@ -129,7 +131,7 @@ fun RoleSelectionScreen(
 
             // Heading
             Text(
-                text = "Choose Your Role",
+                text = stringResource(R.string.choose_your_role),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -139,7 +141,7 @@ fun RoleSelectionScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "How would you like to use LocalBites?",
+                text = stringResource(R.string.how_would_you_like_to_use),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -188,13 +190,13 @@ fun RoleSelectionScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Setting up...",
+                        text = stringResource(R.string.setting_up),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
                 } else {
                     Text(
-                        text = "Continue",
+                        text = stringResource(R.string.continue_button),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -205,7 +207,7 @@ fun RoleSelectionScreen(
 
             // Info text
             Text(
-                text = "You can change your role later from settings",
+                text = stringResource(R.string.change_role_later),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -247,6 +249,10 @@ private fun RoleCard(
         animationSpec = tween(300),
         label = "elevation",
     )
+
+    val title = stringResource(roleOption.titleResId)
+    val subtitle = stringResource(roleOption.subtitleResId)
+    val description = stringResource(roleOption.descriptionResId)
 
     Card(
         modifier = Modifier
@@ -290,7 +296,7 @@ private fun RoleCard(
             ) {
                 Icon(
                     imageVector = roleOption.icon,
-                    contentDescription = roleOption.title,
+                    contentDescription = title,
                     modifier = Modifier.size(32.dp),
                     tint = if (isSelected) {
                         MaterialTheme.colorScheme.onPrimary
@@ -307,7 +313,7 @@ private fun RoleCard(
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = roleOption.title,
+                    text = title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = if (isSelected) {
@@ -320,7 +326,7 @@ private fun RoleCard(
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = roleOption.subtitle,
+                    text = subtitle,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -329,7 +335,7 @@ private fun RoleCard(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = roleOption.description,
+                    text = description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -347,7 +353,7 @@ private fun RoleCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Selected",
+                        contentDescription = stringResource(R.string.selected),
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )

@@ -35,6 +35,8 @@ import com.localbites.core.network.model.Order
 import com.localbites.core.ui.components.EmptyState
 import com.localbites.core.ui.theme.Green60
 import com.localbites.feature.delivery.viewmodel.DeliveryViewModel
+import androidx.compose.ui.res.stringResource
+import com.localbites.feature.delivery.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +54,7 @@ fun DeliveryHistoryScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Delivery History",
+                        text = stringResource(R.string.delivery_history),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                     )
@@ -72,8 +74,8 @@ fun DeliveryHistoryScreen(
         ) {
             if (state.deliveryHistory.isEmpty() && !state.isLoading) {
                 EmptyState(
-                    title = "No deliveries yet",
-                    subtitle = "Completed deliveries will appear here",
+                    title = stringResource(R.string.no_deliveries_yet),
+                    subtitle = stringResource(R.string.completed_deliveries_subtitle),
                 )
             } else {
                 LazyColumn(
@@ -124,7 +126,7 @@ private fun EarningsSummaryHeader(
         ) {
             Column {
                 Text(
-                    text = "Total Earnings",
+                    text = stringResource(R.string.total_earnings),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                 )
@@ -137,7 +139,7 @@ private fun EarningsSummaryHeader(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "Deliveries",
+                    text = stringResource(R.string.deliveries),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                 )

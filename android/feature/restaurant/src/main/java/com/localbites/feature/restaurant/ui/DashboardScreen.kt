@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localbites.core.network.model.Order
 import com.localbites.core.ui.components.LoadingScreen
+import androidx.compose.ui.res.stringResource
+import com.localbites.feature.restaurant.R
 import com.localbites.core.ui.theme.Green60
 import com.localbites.core.ui.theme.NonVegRed
 import com.localbites.feature.restaurant.viewmodel.RestaurantOwnerViewModel
@@ -90,7 +92,7 @@ fun DashboardScreen(
         // Recent orders section
         item {
             Text(
-                text = "Recent Orders",
+                text = stringResource(R.string.recent_orders),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -115,13 +117,13 @@ fun DashboardScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = "No orders yet today",
+                            text = stringResource(R.string.no_orders_yet_today),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "New orders will appear here",
+                            text = stringResource(R.string.new_orders_will_appear),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         )
