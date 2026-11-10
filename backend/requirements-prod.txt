@@ -5,6 +5,7 @@ djangorestframework-simplejwt==5.4.0
 django-filter==24.3
 dj-database-url==2.3.0
 psycopg2-binary==2.9.10
+channels==4.2.0
 gunicorn==23.0.0
 python-decouple==3.8
 whitenoise==6.8.2
