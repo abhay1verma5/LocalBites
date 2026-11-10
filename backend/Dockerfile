@@ -9,11 +9,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements-prod.txt .
+RUN pip install --no-cache-dir -r requirements-prod.txt
 
 COPY . .
 
-EXPOSE 8000
+RUN DJANGO_SETTINGS_MODULE=localbites.settings.prod \
+    SECRET_KEY=build-only-key \
+    DATABASE_URL=sqlite:///dev.db \
+    python manage.py collectstatic --no-input
 
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "localbites.asgi:application"]
+EXPOSE 10000
+
+CMD ["sh", "-c", "python manage.py migrate && gunicorn localbites.wsgi:application --bind 0.0.0.0:${PORT:-10000}"]
