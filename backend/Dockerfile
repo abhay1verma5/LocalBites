@@ -16,4 +16,7 @@ COPY . .
 
 EXPOSE 10000
 
-CMD python manage.py collectstatic --no-input && python manage.py migrate && gunicorn localbites.wsgi:application --bind 0.0.0.0:${PORT:-10000}
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
