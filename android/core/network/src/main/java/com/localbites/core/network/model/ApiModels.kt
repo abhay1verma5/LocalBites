@@ -143,6 +143,7 @@ data class PlaceOrderRequest(
 @JsonClass(generateAdapter = true)
 data class Order(
     val id: Int,
+    @Json(name = "restaurant_id") val restaurantId: Int? = null,
     @Json(name = "restaurant_name") val restaurantName: String?,
     @Json(name = "restaurant_image") val restaurantImage: String?,
     val status: String,
@@ -156,6 +157,7 @@ data class Order(
     @Json(name = "delivered_at") val deliveredAt: String?,
     val items: List<OrderItem>?,
     @Json(name = "delivery_partner_name") val deliveryPartnerName: String?,
+    @Json(name = "delivery_partner_phone") val deliveryPartnerPhone: String? = null,
 )
 
 @JsonClass(generateAdapter = true)

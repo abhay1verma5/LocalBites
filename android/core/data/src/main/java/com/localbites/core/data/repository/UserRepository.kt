@@ -43,6 +43,14 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun createAddress(address: Address): Resource<Address> {
+        return safeApiCall { authApi.createAddress(address) }
+    }
+
+    suspend fun deleteAddress(id: Int): Resource<Unit> {
+        return safeApiCall { authApi.deleteAddress(id) }
+    }
+
     suspend fun updateProfile(body: Map<String, String>): Resource<UserProfile> {
         val result = safeApiCall { authApi.updateProfile(body) }
         if (result is Resource.Success) {

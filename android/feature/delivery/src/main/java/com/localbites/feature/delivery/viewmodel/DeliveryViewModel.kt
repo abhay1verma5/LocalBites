@@ -3,6 +3,7 @@ package com.localbites.feature.delivery.viewmodel
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.localbites.core.common.datastore.TokenManager
 import com.localbites.core.common.location.LocationManager
 import com.localbites.core.common.util.Resource
 import com.localbites.core.common.util.safeApiCall
@@ -28,6 +29,7 @@ data class DeliveryUiState(
     val todayDeliveries: Int = 0,
     val todayEarnings: String = "0",
     val error: String? = null,
+    val isLoggedOut: Boolean = false,
     // Location
     val currentLocation: Location? = null,
     val locationPermissionGranted: Boolean = false,
@@ -37,6 +39,7 @@ data class DeliveryUiState(
 class DeliveryViewModel @Inject constructor(
     private val deliveryApi: DeliveryApi,
     val locationManager: LocationManager,
+    private val tokenManager: TokenManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DeliveryUiState())
@@ -265,6 +268,14 @@ class DeliveryViewModel @Inject constructor(
                 }
                 is Resource.Loading -> Unit
             }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            stopLocationTracking()
+            tokenManager.clearAll()
+            _uiState.update { it.copy(isLoggedOut = true) }
         }
     }
 

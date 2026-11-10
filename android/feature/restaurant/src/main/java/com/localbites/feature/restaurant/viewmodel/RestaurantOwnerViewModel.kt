@@ -2,6 +2,7 @@ package com.localbites.feature.restaurant.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.localbites.core.common.datastore.TokenManager
 import com.localbites.core.common.util.Resource
 import com.localbites.core.common.util.safeApiCall
 import com.localbites.core.network.api.OrderApi
@@ -28,12 +29,14 @@ data class RestaurantOwnerUiState(
     val todayOrdersCount: Int = 0,
     val todayRevenue: Double = 0.0,
     val error: String? = null,
+    val isLoggedOut: Boolean = false,
 )
 
 @HiltViewModel
 class RestaurantOwnerViewModel @Inject constructor(
     private val restaurantApi: RestaurantApi,
     private val orderApi: OrderApi,
+    private val tokenManager: TokenManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantOwnerUiState())
@@ -194,6 +197,13 @@ class RestaurantOwnerViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            tokenManager.clearAll()
+            _uiState.update { it.copy(isLoggedOut = true) }
+        }
     }
 
     private fun updateOrderInList(updatedOrder: Order) {

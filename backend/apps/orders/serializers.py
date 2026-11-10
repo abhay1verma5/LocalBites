@@ -25,17 +25,19 @@ class OrderCreateSerializer(serializers.Serializer):
 
 class OrderListSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
+    restaurant_id = serializers.IntegerField(source="restaurant.id", read_only=True)
     restaurant_name = serializers.CharField(source="restaurant.name", read_only=True)
     restaurant_image = serializers.ImageField(source="restaurant.image", read_only=True)
     delivery_partner_name = serializers.SerializerMethodField()
+    delivery_partner_phone = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
-            "id", "restaurant_name", "restaurant_image", "status",
+            "id", "restaurant_id", "restaurant_name", "restaurant_image", "status",
             "subtotal", "delivery_fee", "tax", "discount", "total",
             "special_instructions", "placed_at", "delivered_at",
-            "items", "delivery_partner_name",
+            "items", "delivery_partner_name", "delivery_partner_phone",
         ]
 
     def get_delivery_partner_name(self, obj):
@@ -43,9 +45,15 @@ class OrderListSerializer(serializers.ModelSerializer):
             return obj.delivery_partner.first_name or obj.delivery_partner.phone
         return None
 
+    def get_delivery_partner_phone(self, obj):
+        if obj.delivery_partner:
+            return obj.delivery_partner.phone
+        return None
+
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
+    restaurant_id = serializers.IntegerField(source="restaurant.id", read_only=True)
     restaurant_name = serializers.CharField(source="restaurant.name", read_only=True)
     restaurant_phone = serializers.CharField(source="restaurant.phone", read_only=True)
     customer_phone = serializers.CharField(source="customer.phone", read_only=True)
@@ -56,7 +64,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            "id", "status", "restaurant_name", "restaurant_phone",
+            "id", "status", "restaurant_id", "restaurant_name", "restaurant_phone",
             "customer_phone", "customer_name",
             "delivery_partner_name", "delivery_partner_phone",
             "subtotal", "delivery_fee", "tax", "discount", "total",

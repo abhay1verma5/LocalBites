@@ -1,6 +1,10 @@
 package com.localbites.feature.customer.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,17 +14,27 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.DeliveryDining
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -195,7 +209,10 @@ fun OrderTrackingScreen(
             }
 
             if (order.deliveryPartnerName != null) {
-                DeliveryPartnerCard(partnerName = order.deliveryPartnerName!!)
+                DeliveryPartnerCard(
+                    partnerName = order.deliveryPartnerName!!,
+                    partnerPhone = order.deliveryPartnerPhone,
+                )
             }
 
             OrderItemsCard(order = order)
@@ -220,6 +237,50 @@ fun OrderTrackingScreen(
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                     )
+                }
+            }
+
+            // Rating section for delivered orders
+            if (order.status == "DELIVERED" && !uiState.ratingSubmitted && order.restaurantId != null) {
+                RateOrderCard(
+                    restaurantName = order.restaurantName ?: "",
+                    onSubmitRating = { rating, review ->
+                        viewModel.submitRating(
+                            restaurantId = order.restaurantId!!,
+                            rating = rating,
+                            review = review,
+                        )
+                    },
+                )
+            }
+
+            if (uiState.ratingSubmitted) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            Icons.Filled.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFFFB300),
+                            modifier = Modifier.size(24.dp),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Thanks for your rating!",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                 }
             }
 
@@ -430,7 +491,8 @@ private fun StatusHeaderCard(order: Order) {
 }
 
 @Composable
-private fun DeliveryPartnerCard(partnerName: String) {
+private fun DeliveryPartnerCard(partnerName: String, partnerPhone: String? = null) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -477,7 +539,12 @@ private fun DeliveryPartnerCard(partnerName: String) {
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
-            IconButton(onClick = { /* Open dialer */ }) {
+            IconButton(onClick = {
+                partnerPhone?.let { phone ->
+                    val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
+                    context.startActivity(intent)
+                }
+            }) {
                 Icon(
                     imageVector = Icons.Outlined.Phone,
                     contentDescription = stringResource(R.string.call_delivery_partner),
@@ -653,5 +720,87 @@ private fun SummaryRow(
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal,
             color = if (isHighlight) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
         )
+    }
+}
+
+@Composable
+private fun RateOrderCard(
+    restaurantName: String,
+    onSubmitRating: (rating: Int, review: String) -> Unit,
+) {
+    var selectedRating by remember { mutableIntStateOf(0) }
+    var reviewText by remember { mutableStateOf("") }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "How was your order?",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            if (restaurantName.isNotBlank()) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Rate $restaurantName",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Star rating row
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                for (i in 1..5) {
+                    Icon(
+                        imageVector = if (i <= selectedRating) Icons.Filled.Star else Icons.Outlined.Star,
+                        contentDescription = "Rate $i stars",
+                        tint = if (i <= selectedRating) Color(0xFFFFB300) else MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clickable { selectedRating = i },
+                    )
+                }
+            }
+
+            if (selectedRating > 0) {
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = reviewText,
+                    onValueChange = { reviewText = it },
+                    label = { Text("Write a review (optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    maxLines = 3,
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = { onSubmitRating(selectedRating, reviewText) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AddGreen,
+                    ),
+                ) {
+                    Text(
+                        text = "Submit Rating",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+        }
     }
 }

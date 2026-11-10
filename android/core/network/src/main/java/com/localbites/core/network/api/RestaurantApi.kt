@@ -23,6 +23,12 @@ interface RestaurantApi {
     @GET("restaurants/{id}/ratings/")
     suspend fun getRestaurantRatings(@Path("id") id: Int): Response<PaginatedResponse<Map<String, Any>>>
 
+    @POST("restaurants/{id}/ratings/")
+    suspend fun submitRating(
+        @Path("id") id: Int,
+        @Body body: Map<String, @JvmSuppressWildcards Any>,
+    ): Response<Map<String, Any>>
+
     // Owner APIs
     @GET("restaurants/owner/")
     suspend fun getOwnerRestaurants(): Response<PaginatedResponse<Restaurant>>

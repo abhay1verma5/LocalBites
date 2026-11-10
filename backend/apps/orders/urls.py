@@ -10,5 +10,6 @@ urlpatterns = [
     # Restaurant owner
     path("restaurant/", views.RestaurantOrderListView.as_view(), name="restaurant-orders"),
     path("<int:pk>/accept/", views.AcceptOrderView.as_view(), name="accept-order"),
+    path("<int:pk>/preparing/", views.MarkPreparingView.as_view(), name="mark-preparing"),
     path("<int:pk>/ready/", views.MarkReadyView.as_view(), name="mark-ready"),
 ]

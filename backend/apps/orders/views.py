@@ -151,6 +151,21 @@ class AcceptOrderView(APIView):
         return Response(OrderDetailSerializer(order).data)
 
 
+class MarkPreparingView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        order = Order.objects.filter(
+            pk=pk, restaurant__owner=request.user, status=Order.Status.CONFIRMED,
+        ).first()
+        if not order:
+            return Response({"error": "Order not found or not confirmed"},
+                          status=status.HTTP_400_BAD_REQUEST)
+        order.status = Order.Status.PREPARING
+        order.save()
+        return Response(OrderDetailSerializer(order).data)
+
+
 class MarkReadyView(APIView):
     permission_classes = [IsAuthenticated]
 

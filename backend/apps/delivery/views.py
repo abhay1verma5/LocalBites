@@ -170,6 +170,33 @@ class ConfirmDeliveryView(APIView):
         return Response({"status": "Delivered successfully"})
 
 
+class MarkOnTheWayView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        order = Order.objects.filter(
+            pk=pk, delivery_partner=request.user, status=Order.Status.PICKED_UP,
+        ).first()
+        if not order:
+            return Response({"error": "Order not found"}, status=status.HTTP_400_BAD_REQUEST)
+        order.status = Order.Status.ON_THE_WAY
+        order.save()
+
+        try:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"order_{order.id}",
+                {
+                    "type": "order_status_update",
+                    "data": {"type": "status", "status": order.status},
+                },
+            )
+        except Exception:
+            pass
+
+        return Response({"status": "On the way"})
+
+
 class DeliveryHistoryView(generics.ListAPIView):
     serializer_class = OrderListSerializer
     permission_classes = [IsAuthenticated]

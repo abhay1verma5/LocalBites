@@ -3,6 +3,7 @@ package com.localbites.feature.customer.ui
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +13,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.AddLocation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localbites.core.database.entity.CartEntity
+import com.localbites.core.network.model.Address
 import com.localbites.core.ui.R as CoreR
 import com.localbites.core.ui.components.FoodTypeIndicator
 import com.localbites.core.ui.components.LottieEmptyState
@@ -51,6 +56,22 @@ fun CartScreen(
     val deliveryFee = if (cartItems.isNotEmpty()) DEFAULT_DELIVERY_FEE else 0.0
     val tax = subtotal * TAX_RATE
     val total = subtotal + deliveryFee + tax
+
+    var selectedAddress by remember { mutableStateOf<Address?>(null) }
+    var showAddressSheet by remember { mutableStateOf(false) }
+    var showAddAddressDialog by remember { mutableStateOf(false) }
+
+    // Load addresses when screen opens
+    LaunchedEffect(Unit) {
+        viewModel.loadAddresses()
+    }
+
+    // Auto-select default address or first address
+    LaunchedEffect(uiState.addresses) {
+        if (selectedAddress == null && uiState.addresses.isNotEmpty()) {
+            selectedAddress = uiState.addresses.find { it.isDefault } ?: uiState.addresses.first()
+        }
+    }
 
     LaunchedEffect(uiState.orderPlacedSuccessfully) {
         if (uiState.orderPlacedSuccessfully) {
@@ -96,7 +117,6 @@ fun CartScreen(
         },
     ) { innerPadding ->
         if (cartItems.isEmpty()) {
-            // Lottie empty cart animation
             LottieEmptyState(
                 animationRes = CoreR.raw.empty_cart,
                 title = stringResource(R.string.your_cart_is_empty),
@@ -117,6 +137,15 @@ fun CartScreen(
                         RestaurantHeader(restaurantName = cartItems.first().restaurantName)
                     }
 
+                    // Delivery address selector
+                    item {
+                        DeliveryAddressCard(
+                            selectedAddress = selectedAddress,
+                            onChangeClick = { showAddressSheet = true },
+                            onAddClick = { showAddAddressDialog = true },
+                        )
+                    }
+
                     items(
                         items = cartItems,
                         key = { it.id },
@@ -129,7 +158,6 @@ fun CartScreen(
                         )
                     }
 
-                    // Dashed line separator (Swiggy style)
                     item {
                         Spacer(modifier = Modifier.height(8.dp))
                         DashedDivider(
@@ -152,12 +180,103 @@ fun CartScreen(
                 GradientCheckoutButton(
                     total = total,
                     isLoading = uiState.isLoading,
+                    enabled = selectedAddress != null,
                     onCheckoutClick = {
-                        viewModel.placeOrder(deliveryAddressId = 1)
+                        selectedAddress?.let { addr ->
+                            viewModel.placeOrder(deliveryAddressId = addr.id ?: 1)
+                        }
                     },
                 )
             }
         }
+    }
+
+    // Address selection bottom sheet
+    if (showAddressSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showAddressSheet = false },
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Select Delivery Address",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                uiState.addresses.forEach { address ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                selectedAddress = address
+                                showAddressSheet = false
+                            },
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (selectedAddress?.id == address.id)
+                            MaterialTheme.colorScheme.primaryContainer
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant,
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp),
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = address.label,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(
+                                    text = "${address.addressLine}, ${address.city}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        showAddressSheet = false
+                        showAddAddressDialog = true
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Icon(Icons.Outlined.AddLocation, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Add New Address")
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+    }
+
+    // Add address dialog
+    if (showAddAddressDialog) {
+        AddAddressDialog(
+            onDismiss = { showAddAddressDialog = false },
+            onSave = { address ->
+                viewModel.createAddress(address)
+                showAddAddressDialog = false
+            },
+        )
     }
 
     uiState.error?.let { error ->
@@ -165,6 +284,192 @@ fun CartScreen(
             viewModel.clearError()
         }
     }
+}
+
+@Composable
+private fun DeliveryAddressCard(
+    selectedAddress: Address?,
+    onChangeClick: () -> Unit,
+    onAddClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(22.dp),
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+
+            if (selectedAddress != null) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Deliver to: ${selectedAddress.label}",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = "${selectedAddress.addressLine}, ${selectedAddress.city}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                TextButton(onClick = onChangeClick) {
+                    Text(
+                        text = "Change",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            } else {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "No delivery address",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                    Text(
+                        text = "Add an address to place your order",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                TextButton(onClick = onAddClick) {
+                    Text(
+                        text = "Add",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AddAddressDialog(
+    onDismiss: () -> Unit,
+    onSave: (Address) -> Unit,
+) {
+    var label by remember { mutableStateOf("HOME") }
+    var addressLine by remember { mutableStateOf("") }
+    var landmark by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
+    var state by remember { mutableStateOf("") }
+    var pincode by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Add Delivery Address", fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Label selector
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("HOME", "WORK", "OTHER").forEach { opt ->
+                        FilterChip(
+                            selected = label == opt,
+                            onClick = { label = opt },
+                            label = { Text(opt) },
+                        )
+                    }
+                }
+
+                OutlinedTextField(
+                    value = addressLine,
+                    onValueChange = { addressLine = it },
+                    label = { Text("Address Line") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
+                )
+                OutlinedTextField(
+                    value = landmark,
+                    onValueChange = { landmark = it },
+                    label = { Text("Landmark (Optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = city,
+                        onValueChange = { city = it },
+                        label = { Text("City") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        shape = RoundedCornerShape(10.dp),
+                    )
+                    OutlinedTextField(
+                        value = state,
+                        onValueChange = { state = it },
+                        label = { Text("State") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        shape = RoundedCornerShape(10.dp),
+                    )
+                }
+                OutlinedTextField(
+                    value = pincode,
+                    onValueChange = { pincode = it },
+                    label = { Text("Pincode") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (addressLine.isNotBlank() && city.isNotBlank() && state.isNotBlank() && pincode.isNotBlank()) {
+                        onSave(
+                            Address(
+                                label = label,
+                                addressLine = addressLine,
+                                landmark = landmark,
+                                city = city,
+                                state = state,
+                                pincode = pincode,
+                                latitude = 0.0,
+                                longitude = 0.0,
+                                isDefault = false,
+                            )
+                        )
+                    }
+                },
+                enabled = addressLine.isNotBlank() && city.isNotBlank() && state.isNotBlank() && pincode.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(containerColor = AddGreen),
+            ) {
+                Text("Save Address", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+    )
 }
 
 // Dashed line divider (Swiggy-style)
@@ -473,6 +778,7 @@ private fun PriceRow(
 private fun GradientCheckoutButton(
     total: Double,
     isLoading: Boolean,
+    enabled: Boolean = true,
     onCheckoutClick: () -> Unit,
 ) {
     Surface(
@@ -487,7 +793,7 @@ private fun GradientCheckoutButton(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
-            enabled = !isLoading,
+            enabled = !isLoading && enabled,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
                 disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),

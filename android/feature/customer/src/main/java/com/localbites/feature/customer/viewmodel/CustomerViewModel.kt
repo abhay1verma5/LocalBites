@@ -13,6 +13,7 @@ import com.localbites.core.common.util.safeApiCall
 import com.localbites.core.data.repository.OrderRepository
 import com.localbites.core.data.repository.RestaurantRepository
 import com.localbites.core.data.repository.UserRepository
+import com.localbites.core.network.api.RestaurantApi
 import com.localbites.core.database.dao.CartDao
 import com.localbites.core.database.entity.CartEntity
 import com.localbites.core.network.api.OrderApi
@@ -54,6 +55,7 @@ data class CustomerUiState(
     val userProfile: UserProfile? = null,
     val addresses: List<Address> = emptyList(),
     val isLoggedOut: Boolean = false,
+    val ratingSubmitted: Boolean = false,
     // Network state
     val isOnline: Boolean = true,
     val networkType: NetworkType = NetworkType.WIFI,
@@ -66,6 +68,7 @@ class CustomerViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val orderApi: OrderApi,
     private val paymentApi: PaymentApi,
+    private val restaurantApi: RestaurantApi,
     private val cartDao: CartDao,
     private val tokenManager: TokenManager,
     val locationManager: LocationManager,
@@ -608,6 +611,54 @@ class CustomerViewModel @Inject constructor(
                 is Resource.Loading -> Unit
             }
         }
+    }
+
+    fun createAddress(address: Address) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            when (val result = userRepository.createAddress(address)) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(isLoading = false) }
+                    loadAddresses()
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, error = result.message) }
+                }
+                is Resource.Loading -> Unit
+            }
+        }
+    }
+
+    fun deleteAddress(id: Int) {
+        viewModelScope.launch {
+            when (userRepository.deleteAddress(id)) {
+                is Resource.Success -> loadAddresses()
+                is Resource.Error -> Unit
+                is Resource.Loading -> Unit
+            }
+        }
+    }
+
+    // --------------- Rating ---------------
+
+    fun submitRating(restaurantId: Int, rating: Int, review: String = "") {
+        viewModelScope.launch {
+            val body = mutableMapOf<String, Any>(
+                "rating" to rating,
+            )
+            if (review.isNotBlank()) body["review"] = review
+            when (safeApiCall { restaurantApi.submitRating(restaurantId, body) }) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(ratingSubmitted = true) }
+                }
+                is Resource.Error -> Unit
+                is Resource.Loading -> Unit
+            }
+        }
+    }
+
+    fun onRatingSubmittedHandled() {
+        _uiState.update { it.copy(ratingSubmitted = false) }
     }
 
     fun updateProfile(firstName: String, lastName: String, email: String) {
