@@ -8,6 +8,9 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*").split(",")
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+# Remove daphne/channels from INSTALLED_APPS for production (not needed with gunicorn)
+INSTALLED_APPS = [app for app in INSTALLED_APPS if app not in ("daphne",)]
+
 # Use DATABASE_URL from Render (or fall back to individual vars)
 DATABASE_URL = config("DATABASE_URL", default="")
 if DATABASE_URL:
@@ -26,29 +29,14 @@ else:
         }
     }
 
-# Redis is optional on free tier — use in-memory channel layer if not available
-REDIS_HOST = config("REDIS_HOST", default="")
-if REDIS_HOST:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [(REDIS_HOST, 6379)],
-            },
-        },
-    }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer",
-        },
-    }
+# No channels/redis on free tier
+CHANNEL_LAYERS = {}
 
-# Celery — optional, tasks run synchronously if no broker
-CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="")
-CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default="")
-if not CELERY_BROKER_URL:
-    CELERY_TASK_ALWAYS_EAGER = True
+# No Celery on free tier
+CELERY_TASK_ALWAYS_EAGER = True
+
+# Use WSGI (gunicorn), not ASGI
+WSGI_APPLICATION = "localbites.wsgi.application"
 
 # Security
 SECURE_BROWSER_XSS_FILTER = True
