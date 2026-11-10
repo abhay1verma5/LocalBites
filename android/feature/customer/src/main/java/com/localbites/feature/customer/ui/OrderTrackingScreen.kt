@@ -114,7 +114,7 @@ fun OrderTrackingScreen(
 
             // Delivery partner info
             if (order.deliveryPartnerName != null) {
-                DeliveryPartnerCard(partnerName = order.deliveryPartnerName)
+                DeliveryPartnerCard(partnerName = order.deliveryPartnerName!!)
             }
 
             // Order items
@@ -200,7 +200,7 @@ private fun StatusHeaderCard(order: Order) {
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = order.restaurantName,
+                        text = order.restaurantName!!,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -329,7 +329,7 @@ private fun OrderItemsCard(order: Order) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = order.specialInstructions,
+                    text = order.specialInstructions ?: "",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

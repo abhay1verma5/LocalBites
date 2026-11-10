@@ -69,16 +69,19 @@ class UpdateLocationView(APIView):
                 latitude=serializer.validated_data["latitude"],
                 longitude=serializer.validated_data["longitude"],
             )
-            # Send via WebSocket
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"order_{active_order.id}",
-                {
-                    "type": "delivery_location_update",
-                    "latitude": str(serializer.validated_data["latitude"]),
-                    "longitude": str(serializer.validated_data["longitude"]),
-                },
-            )
+            # Send via WebSocket (graceful if Redis unavailable)
+            try:
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    f"order_{active_order.id}",
+                    {
+                        "type": "delivery_location_update",
+                        "latitude": str(serializer.validated_data["latitude"]),
+                        "longitude": str(serializer.validated_data["longitude"]),
+                    },
+                )
+            except Exception:
+                pass
 
         return Response({"status": "location updated"})
 
@@ -110,19 +113,22 @@ class AcceptDeliveryView(APIView):
         order.picked_up_at = timezone.now()
         order.save()
 
-        # Notify via WebSocket
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"order_{order.id}",
-            {
-                "type": "order_status_update",
-                "data": {
-                    "type": "status",
-                    "status": order.status,
-                    "delivery_partner": request.user.first_name or request.user.phone,
+        # Notify via WebSocket (graceful if Redis unavailable)
+        try:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"order_{order.id}",
+                {
+                    "type": "order_status_update",
+                    "data": {
+                        "type": "status",
+                        "status": order.status,
+                        "delivery_partner": request.user.first_name or request.user.phone,
+                    },
                 },
-            },
-        )
+            )
+        except Exception:
+            pass
 
         return Response({"status": "Delivery accepted"})
 
@@ -148,15 +154,18 @@ class ConfirmDeliveryView(APIView):
         profile.total_earnings += order.delivery_fee
         profile.save()
 
-        # Notify via WebSocket
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"order_{order.id}",
-            {
-                "type": "order_status_update",
-                "data": {"type": "status", "status": order.status},
-            },
-        )
+        # Notify via WebSocket (graceful if Redis unavailable)
+        try:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"order_{order.id}",
+                {
+                    "type": "order_status_update",
+                    "data": {"type": "status", "status": order.status},
+                },
+            )
+        except Exception:
+            pass
 
         return Response({"status": "Delivered successfully"})
 

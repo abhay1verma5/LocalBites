@@ -3,6 +3,7 @@ package com.localbites.feature.customer.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,7 +40,7 @@ import com.localbites.core.ui.components.LoadingScreen
 import com.localbites.core.ui.components.RatingChip
 import com.localbites.feature.customer.viewmodel.CustomerViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RestaurantDetailScreen(
     restaurantId: Int,
@@ -267,7 +268,7 @@ private fun RestaurantInfoSection(restaurant: RestaurantDetail) {
         if (!restaurant.description.isNullOrBlank()) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = restaurant.description,
+                text = restaurant.description!!,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
@@ -407,7 +408,7 @@ private fun MenuItemCard(
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                     )
-                    if (menuItem.discountedPrice != null && menuItem.discountedPrice < menuItem.price) {
+                    if (menuItem.discountedPrice != null && menuItem.discountedPrice!! < menuItem.price) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "₹${menuItem.price.toInt()}",
@@ -421,7 +422,7 @@ private fun MenuItemCard(
                 if (!menuItem.description.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = menuItem.description,
+                        text = menuItem.description!!,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,

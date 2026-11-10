@@ -152,7 +152,7 @@ private fun OrderHistoryCard(
             // Date
             if (order.placedAt != null) {
                 Text(
-                    text = formatOrderDate(order.placedAt),
+                    text = formatOrderDate(order.placedAt!!),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

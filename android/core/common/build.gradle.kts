@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.localbites.core.common"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -29,4 +29,5 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
+    api(libs.retrofit)
 }

@@ -1,6 +1,7 @@
 package com.localbites.feature.restaurant.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
@@ -91,7 +92,7 @@ fun RestaurantMainScreen(
 
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = androidx.compose.ui.unit.dp.times(3),
+                tonalElevation = 3.dp,
             ) {
                 RestaurantTab.entries.forEach { tab ->
                     val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true

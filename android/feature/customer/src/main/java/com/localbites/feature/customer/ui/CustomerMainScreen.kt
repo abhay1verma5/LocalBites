@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -204,14 +205,14 @@ private fun CustomerProfilePlaceholder(onNavigateToProfile: () -> Unit) {
     ) {
         androidx.compose.foundation.layout.Column(
             horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-            modifier = Modifier.padding(androidx.compose.ui.unit.dp.times(32)),
+            modifier = Modifier.padding(32.dp),
         ) {
             Text(
                 text = "Profile",
                 style = MaterialTheme.typography.headlineMedium,
             )
             androidx.compose.foundation.layout.Spacer(
-                modifier = Modifier.padding(top = androidx.compose.ui.unit.dp.times(16))
+                modifier = Modifier.padding(top = 16.dp)
             )
             Button(onClick = onNavigateToProfile) {
                 Text("Go to Full Profile")

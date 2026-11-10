@@ -43,25 +43,19 @@ fun RootNavHost() {
             val phone = backStackEntry.arguments?.getString("phone") ?: ""
             OtpVerificationScreen(
                 phone = phone,
-                onVerified = { hasRole, role ->
+                onVerified = { hasRole ->
                     if (hasRole) {
-                        when (role) {
-                            "CUSTOMER" -> navController.navigate(Routes.CUSTOMER_MAIN) {
-                                popUpTo(Routes.PHONE_INPUT) { inclusive = true }
-                            }
-                            "RESTAURANT_OWNER" -> navController.navigate(Routes.RESTAURANT_MAIN) {
-                                popUpTo(Routes.PHONE_INPUT) { inclusive = true }
-                            }
-                            "DELIVERY_PARTNER" -> navController.navigate(Routes.DELIVERY_MAIN) {
-                                popUpTo(Routes.PHONE_INPUT) { inclusive = true }
-                            }
+                        // Role already saved in TokenManager by ViewModel
+                        navController.navigate(Routes.CUSTOMER_MAIN) {
+                            popUpTo(Routes.PHONE_INPUT) { inclusive = true }
                         }
                     } else {
                         navController.navigate(Routes.ROLE_SELECTION) {
                             popUpTo(Routes.PHONE_INPUT) { inclusive = true }
                         }
                     }
-                }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
