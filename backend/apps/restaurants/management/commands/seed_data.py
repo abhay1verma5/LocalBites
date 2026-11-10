@@ -19,9 +19,11 @@ class Command(BaseCommand):
             },
         )
 
-        if Restaurant.objects.filter(owner=owner).exists():
+        if Restaurant.objects.filter(owner=owner).count() >= 5:
             self.stdout.write(self.style.WARNING("Seed data already exists, skipping."))
             return
+        # Clean partial seed data
+        Restaurant.objects.filter(owner=owner).delete()
 
         restaurants_data = [
             {
@@ -260,8 +262,9 @@ class Command(BaseCommand):
             restaurant = Restaurant.objects.create(owner=owner, **r_data)
             self.stdout.write(f"  Created restaurant: {restaurant.name}")
 
+            total_items = 0
             for sort_order, cat_data in enumerate(categories):
-                items = cat_data.pop("items")
+                items = cat_data["items"]
                 category = MenuCategory.objects.create(
                     restaurant=restaurant,
                     name=cat_data["name"],
@@ -278,7 +281,8 @@ class Command(BaseCommand):
                         description=item_data.get("description", ""),
                         preparation_time=15,
                     )
+                total_items += len(items)
 
-            self.stdout.write(f"    Added {sum(len(c['items']) for c in categories)} menu items")
+            self.stdout.write(f"    Added {total_items} menu items")
 
         self.stdout.write(self.style.SUCCESS(f"Seeded {len(restaurants_data)} restaurants successfully!"))
