@@ -10,6 +10,7 @@ class RestaurantListSerializer(serializers.ModelSerializer):
             "id", "name", "cuisine_type", "image", "rating", "total_ratings",
             "avg_delivery_time", "delivery_fee", "min_order_amount",
             "is_veg_only", "is_accepting_orders", "city",
+            "latitude", "longitude",
         ]
 
 

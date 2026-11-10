@@ -202,7 +202,7 @@ fun LottieEmptyState(
         Text(
             text = title,
             style = MaterialTheme.typography.headlineSmall,
-            color = CharcoalText,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
         )
@@ -211,7 +211,7 @@ fun LottieEmptyState(
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
         }

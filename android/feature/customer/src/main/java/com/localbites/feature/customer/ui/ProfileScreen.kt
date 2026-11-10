@@ -242,7 +242,7 @@ fun ProfileScreen(
                         text = stringResource(R.string.profile_personal_info),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = CharcoalText,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     IconButton(onClick = {
                         if (isEditing) {
@@ -327,7 +327,7 @@ fun ProfileScreen(
                     text = stringResource(R.string.profile_saved_addresses),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = CharcoalText,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -336,7 +336,7 @@ fun ProfileScreen(
                     Text(
                         text = stringResource(R.string.profile_no_addresses),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = SecondaryText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
                     uiState.addresses.forEach { address ->
@@ -358,12 +358,12 @@ fun ProfileScreen(
                                     text = address.label,
                                     style = MaterialTheme.typography.labelLarge,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = CharcoalText,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                 )
                                 Text(
                                     text = "${address.addressLine}, ${address.city}, ${address.state} - ${address.pincode}",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = SecondaryText,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
@@ -422,7 +422,7 @@ private fun QuickActionCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(WarmCream),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -437,7 +437,7 @@ private fun QuickActionCard(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Medium,
-                color = CharcoalText,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
             )
@@ -466,12 +466,12 @@ private fun ProfileInfoRow(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                color = CharcoalText,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }

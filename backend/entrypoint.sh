@@ -7,5 +7,8 @@ python manage.py collectstatic --no-input || true
 echo "Running migrations..."
 python manage.py migrate --run-syncdb
 
+echo "Seeding demo data..."
+python manage.py seed_data || true
+
 echo "Starting gunicorn on port ${PORT:-10000}..."
 exec gunicorn localbites.wsgi:application --bind "0.0.0.0:${PORT:-10000}" --timeout 120 --workers 2

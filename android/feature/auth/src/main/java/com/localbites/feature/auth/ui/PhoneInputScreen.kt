@@ -65,7 +65,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.localbites.core.ui.components.LanguageSwitcher
-import com.localbites.core.ui.theme.WarmCream
+import com.localbites.core.ui.theme.Orange95
 import com.localbites.feature.auth.R
 import com.localbites.feature.auth.viewmodel.AuthViewModel
 
@@ -134,7 +134,7 @@ fun PhoneInputScreen(
                             .background(
                                 brush = Brush.verticalGradient(
                                     colors = listOf(
-                                        WarmCream,
+                                        Orange95,
                                         MaterialTheme.colorScheme.surface,
                                     )
                                 )
@@ -247,6 +247,13 @@ fun PhoneInputScreen(
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Phone,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = stringResource(R.string.country_code_india),
                                         style = MaterialTheme.typography.bodyLarge,
@@ -262,13 +269,6 @@ fun PhoneInputScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                 }
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Phone,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                )
                             },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,

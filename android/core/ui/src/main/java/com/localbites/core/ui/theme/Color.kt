@@ -54,10 +54,10 @@ val Neutral95 = Color(0xFFF4EFF4)
 val Neutral99 = Color(0xFFFFFBFE)
 
 // === Semantic Colors (Swiggy/Zomato-inspired) ===
-val CharcoalText = Color(0xFF282C3F)      // Primary text - deep charcoal
-val SecondaryText = Color(0xFF7E808C)      // Secondary/muted text
+val CharcoalText = Color(0xFF1D1D2C)      // Primary text - deeper charcoal for contrast
+val SecondaryText = Color(0xFF686B78)      // Secondary text - darker for readability
 val RatingGreen = Color(0xFF48C479)        // Rating badges, success states
-val WarmCream = Color(0xFFFFF8F0)          // Warm background tint
+val WarmCream = Color(0xFFF1F1F6)          // Background grey - clear card separation
 val OfferBlue = Color(0xFF5D8ED5)          // Offer/promo badges
 val PromoGold = Color(0xFFFFD54F)          // Gold accent for premium offers
 

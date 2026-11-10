@@ -279,7 +279,7 @@ private fun RestaurantInfoSection(restaurant: RestaurantDetail) {
         Text(
             text = restaurant.cuisineType,
             style = MaterialTheme.typography.bodyMedium,
-            color = SecondaryText,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         if (!restaurant.description.isNullOrBlank()) {
@@ -287,7 +287,7 @@ private fun RestaurantInfoSection(restaurant: RestaurantDetail) {
             Text(
                 text = restaurant.description!!,
                 style = MaterialTheme.typography.bodySmall,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -357,7 +357,7 @@ private fun InfoChip(
 ) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = WarmCream,
+        color = MaterialTheme.colorScheme.surfaceVariant,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
@@ -368,12 +368,12 @@ private fun InfoChip(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
-                tint = SecondaryText,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelSmall,
-                color = CharcoalText,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
@@ -390,7 +390,7 @@ private fun MenuCategoryHeader(category: MenuCategory) {
             text = "${category.name} (${category.items.size})",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = CharcoalText,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         )
     }
@@ -443,7 +443,7 @@ private fun MenuItemCard(
                     text = menuItem.name,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = CharcoalText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -455,14 +455,14 @@ private fun MenuItemCard(
                         text = "\u20B9${menuItem.effectivePrice.toInt()}",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = CharcoalText,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     if (menuItem.discountedPrice != null && menuItem.discountedPrice!! < menuItem.price) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "\u20B9${menuItem.price.toInt()}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = SecondaryText,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textDecoration = TextDecoration.LineThrough,
                         )
                     }
@@ -473,7 +473,7 @@ private fun MenuItemCard(
                     Text(
                         text = menuItem.description!!,
                         style = MaterialTheme.typography.bodySmall,
-                        color = SecondaryText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )

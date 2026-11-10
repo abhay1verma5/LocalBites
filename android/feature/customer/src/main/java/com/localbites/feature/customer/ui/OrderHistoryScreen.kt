@@ -134,7 +134,7 @@ private fun OrderHistoryCard(
                     text = order.restaurantName ?: restaurantFallback,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = CharcoalText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -149,7 +149,7 @@ private fun OrderHistoryCard(
                 Text(
                     text = formatOrderDate(order.placedAt!!),
                     style = MaterialTheme.typography.bodySmall,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -161,7 +161,7 @@ private fun OrderHistoryCard(
             Text(
                 text = itemsSummary,
                 style = MaterialTheme.typography.bodyMedium,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )

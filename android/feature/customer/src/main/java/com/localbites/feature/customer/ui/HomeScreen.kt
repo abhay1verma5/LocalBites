@@ -171,7 +171,7 @@ fun HomeScreen(
                     text = stringResource(R.string.restaurants_near_you),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = CharcoalText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
             }
@@ -275,14 +275,14 @@ private fun LocationBar(
                 Text(
                     text = stringResource(R.string.deliver_to),
                     style = MaterialTheme.typography.labelSmall,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = if (hasPermission) deliveryAddress
                     else stringResource(R.string.tap_to_enable_location),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = CharcoalText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -306,7 +306,7 @@ private fun PillSearchBar(
             Text(
                 text = stringResource(R.string.search_restaurants_cuisines),
                 style = MaterialTheme.typography.bodyMedium,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
         leadingIcon = {
@@ -336,7 +336,7 @@ private fun PillSearchBar(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = Color.Transparent,
             focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = WarmCream,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
         ),
     )
 }
@@ -452,7 +452,7 @@ private fun CircularCuisineFilters(
                         .clip(CircleShape)
                         .background(
                             if (isSelected) MaterialTheme.colorScheme.primary
-                            else WarmCream
+                            else MaterialTheme.colorScheme.surface
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -468,7 +468,7 @@ private fun CircularCuisineFilters(
                     text = cuisine,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else CharcoalText,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -625,7 +625,7 @@ private fun RestaurantCard(
                 Text(
                     text = restaurant.cuisineType,
                     style = MaterialTheme.typography.bodySmall,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -636,13 +636,13 @@ private fun RestaurantCard(
                     imageVector = Icons.Outlined.Schedule,
                     contentDescription = stringResource(R.string.delivery_time_label),
                     modifier = Modifier.size(14.dp),
-                    tint = SecondaryText,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.width(3.dp))
                 Text(
                     text = stringResource(com.localbites.core.ui.R.string.delivery_time_min, restaurant.avgDeliveryTime),
                     style = MaterialTheme.typography.labelSmall,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -652,13 +652,13 @@ private fun RestaurantCard(
                     imageVector = Icons.Outlined.DeliveryDining,
                     contentDescription = stringResource(R.string.delivery_fee_label),
                     modifier = Modifier.size(14.dp),
-                    tint = SecondaryText,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.width(3.dp))
                 Text(
                     text = if (restaurant.deliveryFee == 0.0) freeText else "\u20B9${restaurant.deliveryFee.toInt()}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (restaurant.deliveryFee == 0.0) RatingGreen else SecondaryText,
+                    color = if (restaurant.deliveryFee == 0.0) RatingGreen else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = if (restaurant.deliveryFee == 0.0) FontWeight.Bold else FontWeight.Normal,
                 )
 
@@ -669,13 +669,13 @@ private fun RestaurantCard(
                         imageVector = Icons.Outlined.NearMe,
                         contentDescription = stringResource(R.string.distance_label),
                         modifier = Modifier.size(14.dp),
-                        tint = SecondaryText,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.width(3.dp))
                     Text(
                         text = DistanceUtils.formatDistance(distanceKm),
                         style = MaterialTheme.typography.labelSmall,
-                        color = SecondaryText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }

@@ -18,10 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeliveryDining
@@ -123,97 +121,101 @@ fun RoleSelectionScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
-
-            // Heading
-            Text(
-                text = stringResource(R.string.choose_your_role),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = stringResource(R.string.how_would_you_like_to_use),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(36.dp))
-
-            // Role cards
-            roleOptions.forEach { roleOption ->
-                RoleCard(
-                    roleOption = roleOption,
-                    isSelected = selectedRole == roleOption.roleKey,
-                    onClick = { selectedRole = roleOption.roleKey },
+            // Top section: heading
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(top = 32.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.choose_your_role),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = stringResource(R.string.how_would_you_like_to_use),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Continue button
-            Button(
-                onClick = {
-                    selectedRole?.let { viewModel.setRole(it) }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                enabled = selectedRole != null && !uiState.isLoading,
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
-                ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 8.dp,
-                ),
+            // Middle section: role cards
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp,
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = stringResource(R.string.setting_up),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.continue_button),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                roleOptions.forEach { roleOption ->
+                    RoleCard(
+                        roleOption = roleOption,
+                        isSelected = selectedRole == roleOption.roleKey,
+                        onClick = { selectedRole = roleOption.roleKey },
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Bottom section: button + info
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(bottom = 24.dp),
+            ) {
+                Button(
+                    onClick = {
+                        selectedRole?.let { viewModel.setRole(it) }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    enabled = selectedRole != null && !uiState.isLoading,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp,
+                    ),
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = stringResource(R.string.setting_up),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.continue_button),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
 
-            // Info text
-            Text(
-                text = stringResource(R.string.change_role_later),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = stringResource(R.string.change_role_later),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }
@@ -262,7 +264,7 @@ private fun RoleCard(
                 indication = null,
                 onClick = onClick,
             ),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
             color = borderColor,
@@ -277,13 +279,13 @@ private fun RoleCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Icon circle
             Box(
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
                     .background(
                         if (isSelected) {
@@ -297,7 +299,7 @@ private fun RoleCard(
                 Icon(
                     imageVector = roleOption.icon,
                     contentDescription = title,
-                    modifier = Modifier.size(32.dp),
+                    modifier = Modifier.size(24.dp),
                     tint = if (isSelected) {
                         MaterialTheme.colorScheme.onPrimary
                     } else {
@@ -306,7 +308,7 @@ private fun RoleCard(
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             // Text content
             Column(
@@ -314,7 +316,7 @@ private fun RoleCard(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (isSelected) {
                         MaterialTheme.colorScheme.primary
@@ -323,8 +325,6 @@ private fun RoleCard(
                     },
                 )
 
-                Spacer(modifier = Modifier.height(2.dp))
-
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.labelMedium,
@@ -332,11 +332,11 @@ private fun RoleCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = description,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -346,7 +346,7 @@ private fun RoleCard(
                 Spacer(modifier = Modifier.width(8.dp))
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(28.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center,
@@ -354,7 +354,7 @@ private fun RoleCard(
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = stringResource(R.string.selected),
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }

@@ -9,12 +9,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -53,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -168,11 +174,27 @@ fun OtpVerificationScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .padding(paddingValues),
+        ) {
+            val screenHeight = maxHeight
+            val scrollState = rememberScrollState()
+            val density = LocalDensity.current
+            val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
+
+            LaunchedEffect(isKeyboardVisible) {
+                if (isKeyboardVisible) {
+                    scrollState.animateScrollTo(scrollState.maxValue)
+                }
+            }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = screenHeight)
+                .verticalScroll(scrollState)
                 .imePadding()
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -242,7 +264,7 @@ fun OtpVerificationScreen(
                 decorationBox = { _ ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         repeat(6) { index ->
                             val char = otpValue.getOrNull(index)
@@ -250,7 +272,8 @@ fun OtpVerificationScreen(
 
                             Box(
                                 modifier = Modifier
-                                    .size(52.dp)
+                                    .weight(1f)
+                                    .aspectRatio(1f)
                                     .clip(RoundedCornerShape(14.dp))
                                     .background(
                                         if (char != null) {
@@ -279,10 +302,6 @@ fun OtpVerificationScreen(
                                         textAlign = TextAlign.Center,
                                     )
                                 }
-                            }
-
-                            if (index < 5) {
-                                Spacer(modifier = Modifier.width(8.dp))
                             }
                         }
                     }
@@ -377,6 +396,7 @@ fun OtpVerificationScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+        }
         }
     }
 }

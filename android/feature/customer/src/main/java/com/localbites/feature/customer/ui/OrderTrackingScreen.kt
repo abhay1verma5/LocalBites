@@ -373,7 +373,7 @@ private fun StatusHeaderCard(order: Order) {
             .fillMaxWidth()
             .padding(16.dp),
         shape = RoundedCornerShape(16.dp),
-        color = WarmCream,
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -404,7 +404,7 @@ private fun StatusHeaderCard(order: Order) {
             Text(
                 text = statusDescription,
                 style = MaterialTheme.typography.bodyMedium,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             if (order.restaurantName != null) {
@@ -414,14 +414,14 @@ private fun StatusHeaderCard(order: Order) {
                         imageVector = Icons.Outlined.Restaurant,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = SecondaryText,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = order.restaurantName!!,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = CharcoalText,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
@@ -468,13 +468,13 @@ private fun DeliveryPartnerCard(partnerName: String) {
                 Text(
                     text = stringResource(R.string.delivery_partner_label),
                     style = MaterialTheme.typography.labelSmall,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = partnerName,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = CharcoalText,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
             IconButton(onClick = { /* Open dialer */ }) {

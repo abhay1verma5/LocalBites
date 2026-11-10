@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-        buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8000/api/\"")
+        buildConfigField("String", "BASE_URL", "\"https://localbites-api-g7q3.onrender.com/api/\"")
     }
 
     compileOptions {

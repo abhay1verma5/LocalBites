@@ -198,14 +198,14 @@ private fun RestaurantHeader(restaurantName: String) {
             Text(
                 text = stringResource(R.string.order_from),
                 style = MaterialTheme.typography.bodyMedium,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = restaurantName,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = CharcoalText,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -297,7 +297,7 @@ private fun CartItemCard(
                     text = cartItem.itemName,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium,
-                    color = CharcoalText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -388,7 +388,7 @@ private fun PriceBreakdown(
             text = stringResource(R.string.bill_details),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = CharcoalText,
+            color = MaterialTheme.colorScheme.onSurface,
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -416,7 +416,7 @@ private fun PriceBreakdown(
                 text = stringResource(R.string.grand_total),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = CharcoalText,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = "\u20B9${String.format("%.0f", total)}",
@@ -442,7 +442,7 @@ private fun PriceRow(
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = SecondaryText,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (highlight) {
             // FREE delivery green badge
@@ -462,7 +462,7 @@ private fun PriceRow(
             Text(
                 text = "\u20B9${String.format("%.0f", amount)}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = CharcoalText,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
