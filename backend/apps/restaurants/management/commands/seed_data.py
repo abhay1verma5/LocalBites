@@ -19,11 +19,12 @@ class Command(BaseCommand):
             },
         )
 
-        if Restaurant.objects.filter(owner=owner).count() >= 5:
+        existing = Restaurant.objects.filter(owner=owner)
+        if existing.filter(city="Harraiya").count() >= 5:
             self.stdout.write(self.style.WARNING("Seed data already exists, skipping."))
             return
-        # Clean partial seed data
-        Restaurant.objects.filter(owner=owner).delete()
+        # Clean old/partial seed data and re-create
+        existing.delete()
 
         restaurants_data = [
             {
