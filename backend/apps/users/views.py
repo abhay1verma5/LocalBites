@@ -14,6 +14,10 @@ from .serializers import (
     VerifyOTPSerializer,
 )
 
+# Dummy test numbers — OTP is always 123456
+TEST_PHONES = {"+911234567890", "+919876543210", "+910000000000"}
+TEST_OTP = "123456"
+
 
 class SendOTPView(APIView):
     permission_classes = [AllowAny]
@@ -22,6 +26,13 @@ class SendOTPView(APIView):
         serializer = SendOTPSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         phone = serializer.validated_data["phone"]
+
+        # Test numbers: fixed OTP, no DB write
+        if phone in TEST_PHONES:
+            return Response(
+                {"message": "OTP sent successfully", "otp": TEST_OTP},
+                status=status.HTTP_200_OK,
+            )
 
         # Invalidate old OTPs
         OTP.objects.filter(phone=phone, is_used=False).update(is_used=True)
@@ -46,22 +57,29 @@ class VerifyOTPView(APIView):
         phone = serializer.validated_data["phone"]
         otp_code = serializer.validated_data["otp_code"]
 
-        otp = OTP.objects.filter(
-            phone=phone, otp_code=otp_code, is_used=False
-        ).first()
+        # Test numbers: accept fixed OTP without DB lookup
+        if phone in TEST_PHONES:
+            if otp_code != TEST_OTP:
+                return Response(
+                    {"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            otp = OTP.objects.filter(
+                phone=phone, otp_code=otp_code, is_used=False
+            ).first()
 
-        if not otp:
-            return Response(
-                {"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            if not otp:
+                return Response(
+                    {"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST
+                )
 
-        if otp.is_expired:
-            return Response(
-                {"error": "OTP expired"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            if otp.is_expired:
+                return Response(
+                    {"error": "OTP expired"}, status=status.HTTP_400_BAD_REQUEST
+                )
 
-        otp.is_used = True
-        otp.save()
+            otp.is_used = True
+            otp.save()
 
         user, created = User.objects.get_or_create(
             phone=phone,
