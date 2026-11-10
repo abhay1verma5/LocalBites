@@ -291,8 +291,7 @@ fun PhoneInputScreen(
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                             ),
                             textStyle = MaterialTheme.typography.bodyLarge.copy(
-                                fontSize = 18.sp,
-                                letterSpacing = 1.sp,
+                                fontSize = 16.sp,
                             ),
                         )
                     }

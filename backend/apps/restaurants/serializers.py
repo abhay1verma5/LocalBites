@@ -7,7 +7,7 @@ class RestaurantListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = [
-            "id", "name", "cuisine_type", "image", "rating", "total_ratings",
+            "id", "name", "cuisine_type", "image", "image_url", "rating", "total_ratings",
             "avg_delivery_time", "delivery_fee", "min_order_amount",
             "is_veg_only", "is_accepting_orders", "city",
             "latitude", "longitude",
@@ -18,7 +18,7 @@ class RestaurantDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = [
-            "id", "name", "description", "cuisine_type", "image", "cover_image",
+            "id", "name", "description", "cuisine_type", "image", "image_url", "cover_image",
             "phone", "address", "city", "state", "pincode", "latitude", "longitude",
             "rating", "total_ratings", "avg_delivery_time", "delivery_radius_km",
             "min_order_amount", "delivery_fee", "is_veg_only", "is_accepting_orders",

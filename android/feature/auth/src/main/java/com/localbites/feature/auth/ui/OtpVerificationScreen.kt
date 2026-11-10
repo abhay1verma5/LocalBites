@@ -212,10 +212,10 @@ fun OtpVerificationScreen(
             LottieAnimation(
                 composition = composition,
                 progress = { lottieProgress },
-                modifier = Modifier.size(120.dp),
+                modifier = Modifier.size(80.dp),
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Heading
             Text(
@@ -244,7 +244,7 @@ fun OtpVerificationScreen(
                 color = MaterialTheme.colorScheme.primary,
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // OTP Input: 6 individual boxes with shake animation on error
             BasicTextField(
@@ -308,7 +308,7 @@ fun OtpVerificationScreen(
                 },
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Verify button
             Button(
@@ -354,7 +354,7 @@ fun OtpVerificationScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Resend OTP section
             Row(
@@ -395,7 +395,7 @@ fun OtpVerificationScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
         }
     }

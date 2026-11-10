@@ -23,7 +23,7 @@ object DatabaseModule {
             LocalBitesDatabase::class.java,
             "localbites_db"
         )
-            .addMigrations(LocalBitesDatabase.MIGRATION_1_2)
+            .addMigrations(LocalBitesDatabase.MIGRATION_1_2, LocalBitesDatabase.MIGRATION_2_3)
             .build()
 
     @Provides

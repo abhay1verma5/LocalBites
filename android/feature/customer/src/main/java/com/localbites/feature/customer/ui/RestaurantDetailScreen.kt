@@ -218,7 +218,7 @@ private fun CoverImageSection(
             },
     ) {
         AsyncImage(
-            model = restaurant.coverImage ?: restaurant.image,
+            model = restaurant.imageUrl ?: restaurant.coverImage ?: restaurant.image,
             contentDescription = "${restaurant.name} cover",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
@@ -538,7 +538,8 @@ private fun SpringAddButton(
         shape = RoundedCornerShape(8.dp),
         interactionSource = interactionSource,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = AddGreen,
+            contentColor = Color.White,
             disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
@@ -548,12 +549,14 @@ private fun SpringAddButton(
                 imageVector = Icons.Filled.Add,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),
+                tint = Color.White,
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = addText,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
+                color = Color.White,
             )
         } else {
             Text(

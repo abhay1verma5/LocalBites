@@ -9,6 +9,7 @@ data class CachedRestaurantEntity(
     val name: String,
     val cuisineType: String,
     val image: String?,
+    val imageUrl: String? = null,
     val rating: Double,
     val totalRatings: Int,
     val avgDeliveryTime: Int,

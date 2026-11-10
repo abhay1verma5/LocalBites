@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.localbites.core.common.network.NetworkType
+import com.localbites.core.ui.components.LanguageSwitcher
 import com.localbites.core.ui.components.OfflineBanner
 import com.localbites.core.ui.theme.*
 import com.localbites.feature.customer.R
@@ -115,6 +116,17 @@ fun ProfileScreen(
                 ),
             contentAlignment = Alignment.Center,
         ) {
+            // Language switcher top-right
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopEnd)
+                    .padding(top = 12.dp, end = 12.dp),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                LanguageSwitcher()
+            }
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {

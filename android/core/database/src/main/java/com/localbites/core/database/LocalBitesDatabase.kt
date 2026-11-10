@@ -16,7 +16,7 @@ import com.localbites.core.database.entity.*
         CachedOrderEntity::class,
         CachedUserProfileEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class LocalBitesDatabase : RoomDatabase() {
@@ -27,6 +27,12 @@ abstract class LocalBitesDatabase : RoomDatabase() {
     abstract fun cachedUserProfileDao(): CachedUserProfileDao
 
     companion object {
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `cached_restaurants` ADD COLUMN `imageUrl` TEXT")
+            }
+        }
+
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(

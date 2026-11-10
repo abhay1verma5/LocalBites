@@ -329,7 +329,7 @@ private fun QuantityControls(
 ) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.primary,
+        color = AddGreen,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -507,7 +507,7 @@ private fun GradientCheckoutButton(
                             )
                         } else {
                             Brush.horizontalGradient(
-                                listOf(Orange60, Color(0xFFFF6B35))
+                                listOf(AddGreen, Color(0xFF4CAF50))
                             )
                         },
                         shape = RoundedCornerShape(16.dp),

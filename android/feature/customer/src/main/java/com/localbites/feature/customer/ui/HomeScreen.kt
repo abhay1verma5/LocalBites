@@ -508,7 +508,7 @@ private fun RestaurantCard(
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
             ) {
                 AsyncImage(
-                    model = restaurant.image,
+                    model = restaurant.imageUrl ?: restaurant.image,
                     contentDescription = restaurant.name,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,

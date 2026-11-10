@@ -66,6 +66,10 @@ val GradientScrimStart = Color(0x00000000) // Transparent
 val GradientScrimMid = Color(0x40000000)   // 25% black
 val GradientScrimEnd = Color(0xCC000000)   // 80% black - strong for text readability
 
+// Cart / Add button
+val AddGreen = Color(0xFF60B246)       // Swiggy-style green "ADD" button
+val AddGreenDark = Color(0xFF4CAF50)   // Dark theme variant
+
 // Veg/NonVeg indicators
 val VegGreen = Color(0xFF0F8A0F)
 val NonVegRed = Color(0xFFB71C1C)
